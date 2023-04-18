@@ -11,10 +11,12 @@ import com.trunggame.models.User;
 import com.trunggame.repository.RoleRepository;
 import com.trunggame.repository.UserRepository;
 import com.trunggame.security.jwt.JwtUtils;
+import com.trunggame.security.services.UserService;
 import com.trunggame.security.services.impl.UserDetailsImpl;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -22,6 +24,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
+import javax.mail.MessagingException;
 import javax.validation.Valid;
 import java.util.HashSet;
 import java.util.List;
@@ -54,6 +57,12 @@ public class AuthController {
   @Autowired
   JwtUtils jwtUtils;
 
+  @Autowired
+  UserService userService;
+
+  @Value("${default.password}")
+  private String defaultPassword;
+
 //  @ApiOperation(value = "Create a new user", response = BaseResponseDTO.class)
   @PostMapping("/signin")
   public BaseResponseDTO<JwtResponseDTO> authenticateUser(@Valid @RequestBody LoginRequestDTO loginRequest) {
@@ -78,7 +87,7 @@ public class AuthController {
 
 //  @ApiOperation(value = "Login", response = BaseResponseDTO.class)
   @PostMapping("/signup")
-  public BaseResponseDTO<?> registerUser(@Valid @RequestBody SignupRequestDTO signUpRequest) {
+  public BaseResponseDTO<?> registerUser(@Valid @RequestBody SignupRequestDTO signUpRequest) throws MessagingException {
     if (userRepository.existsByUsername(signUpRequest.getUsername())) {
       return new BaseResponseDTO<>("Error: Username is already taken!", 400, 400,null);
     }
@@ -90,7 +99,7 @@ public class AuthController {
     // Create new user's account
     User user = new User(signUpRequest.getUsername(),
                signUpRequest.getEmail(),
-               encoder.encode(signUpRequest.getPassword()), signUpRequest.getPhoneNumber(),signUpRequest.getFullName(),
+               encoder.encode(defaultPassword), signUpRequest.getPhoneNumber(),signUpRequest.getFullName(),
             signUpRequest.getAddress(), EUserStatus.ACTIVE);
 
     Set<String> strRoles = signUpRequest.getRole();
@@ -124,6 +133,7 @@ public class AuthController {
 
     user.setRoles(roles);
     userRepository.save(user);
+    userService.sendEmailRegister(user);
     return new BaseResponseDTO<>("User registered successfully!", 200, 200,null);
   }
 }
