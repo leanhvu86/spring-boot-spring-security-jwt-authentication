@@ -57,8 +57,8 @@ public class AuthController {
   @Autowired
   JwtUtils jwtUtils;
 
-  @Autowired
-  UserService userService;
+//  @Autowired
+//  UserService userService;
 
   @Value("${default.password}")
   private String defaultPassword;
@@ -133,7 +133,7 @@ public class AuthController {
 
     user.setRoles(roles);
     userRepository.save(user);
-    userService.sendEmailRegister(user);
+//    userService.sendEmailRegister(user);
     return new BaseResponseDTO<>("User registered successfully!", 200, 200,null);
   }
 }
