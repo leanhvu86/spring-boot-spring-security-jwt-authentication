@@ -27,10 +27,10 @@ public class Game {
     @Column(nullable = false)
     private String name;
 
-    @Column(name = "description",columnDefinition = "NVARCHAR2(2000)")
+    @Column(name = "description", columnDefinition = "VARCHAR CHARACTER SET utf8")
     private String description;
 
-    @Column(name = "description_en",columnDefinition = "NVARCHAR2(2000)")
+    @Column(name = "description_en", columnDefinition = "VARCHAR CHARACTER SET utf8")
     private String descriptionEn;
 
     @Enumerated(EnumType.STRING)
@@ -53,16 +53,16 @@ public class Game {
     @Column(name = "youtubeLink")
     private String youtubeLink;
 
-    @Column(name = "content_vi")
+    @Column(name = "content_vi", columnDefinition = "VARCHAR(5000) CHARACTER SET utf8")
     private String contentVi;
 
-    @Column(name = "content_en")
+    @Column(name = "content_en", columnDefinition = "VARCHAR(5000) CHARACTER SET utf8")
     private String contentEn;
 
     @Column(name = "marketType")
     private String marketType;
 
-    @Column(name = "companyName",columnDefinition = "NVARCHAR2(2000)")
+    @Column(name = "companyName", columnDefinition = "VARCHAR(5000) CHARACTER SET utf8")
     private String companyName;
 
     @CreatedDate

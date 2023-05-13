@@ -25,11 +25,11 @@ public class GameCategories {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "name", nullable = false,columnDefinition = "NVARCHAR2(2000)")
+    @Column(name = "name", nullable = false,columnDefinition = "VARCHAR(5000) CHARACTER SET utf8")
     private String name;
 
 
-    @Column(name = "description",columnDefinition = "NVARCHAR2(2000)")
+    @Column(name = "description",columnDefinition = "VARCHAR(5000) CHARACTER SET utf8")
     private String description;
 
     @Enumerated(EnumType.STRING)

@@ -20,10 +20,10 @@ public class Company {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "name",columnDefinition = "NVARCHAR2(2000)")
+    @Column(name = "name",columnDefinition = "VARCHAR(5000) CHARACTER SET utf8")
     private String name;
 
-    @Column(name = "address",columnDefinition = "NVARCHAR2(2000)")
+    @Column(name = "address",columnDefinition = "VARCHAR(5000) CHARACTER SET utf8")
     private String address;
 
     @Column(name = "phone_number")
@@ -35,7 +35,7 @@ public class Company {
     @Column(name = "website")
     private String website;
 
-    @Column(name = "description",columnDefinition = "NVARCHAR2(2000)")
+    @Column(name = "description",columnDefinition = "VARCHAR(5000) CHARACTER SET utf8")
     private String description;
 
 

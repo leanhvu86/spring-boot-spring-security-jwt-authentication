@@ -21,7 +21,7 @@ public class GamePackage {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "name",columnDefinition = "NVARCHAR2(5000)")
+    @Column(name = "name",columnDefinition = "VARCHAR(5000) CHARACTER SET utf8")
     private String name;
 
     private double price;
@@ -32,19 +32,20 @@ public class GamePackage {
 
     private String serverGroup;
 
-    @Column(name = "server",columnDefinition = "NVARCHAR2(5000)")
+    @Column(name = "server",columnDefinition = "VARCHAR(5000) CHARACTER SET utf8")
     private String server;
 
-    @Column(name = "attribute",columnDefinition = "NVARCHAR2(5000)")
+    @Column(name = "attribute",columnDefinition = "VARCHAR(5000) CHARACTER SET utf8")
     private String attribute;
 
     private int warehouseQuantity;
 
     private int tradeCount;
 
-    @Column(name = "description_vi",columnDefinition = "NVARCHAR2(5000)")
+    @Column(name = "description_vi",columnDefinition = "VARCHAR CHARACTER SET utf8")
     private String descriptionVi;
 
+    @Column(name = "description_en",columnDefinition = "VARCHAR CHARACTER SET utf8")
     private String descriptionEn;
 
     private int deliveryTime;

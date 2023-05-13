@@ -29,7 +29,7 @@ public class GameOrderDetail {
     @Column(name = "quantity")
     private Integer quantity;
 
-    @Column(name = "character_name",columnDefinition = "NVARCHAR2(2000)")
+    @Column(name = "character_name",columnDefinition = "VARCHAR(5000) CHARACTER SET utf8")
     private String characterName;
 
     @Column(name = "promotion_percent")

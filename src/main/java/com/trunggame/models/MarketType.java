@@ -11,10 +11,10 @@ public class MarketType {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "name",columnDefinition = "NVARCHAR2(5000)")
+    @Column(name = "name",columnDefinition = "VARCHAR(5000) CHARACTER SET utf8")
     private String name;
 
-    @Column(name = "description",columnDefinition = "NVARCHAR2(5000)")
+    @Column(name = "description",columnDefinition = "VARCHAR(5000) CHARACTER SET utf8")
     private String description;
 
     public MarketType() {
