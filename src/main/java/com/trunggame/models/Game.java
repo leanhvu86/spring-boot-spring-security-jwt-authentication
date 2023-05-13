@@ -1,11 +1,13 @@
 package com.trunggame.models;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -25,10 +27,10 @@ public class Game {
     @Column(nullable = false)
     private String name;
 
-    @Column(name = "description")
+    @Column(name = "description",columnDefinition = "NVARCHAR2(2000)")
     private String description;
 
-    @Column(name = "description_en")
+    @Column(name = "description_en",columnDefinition = "NVARCHAR2(2000)")
     private String descriptionEn;
 
     @Enumerated(EnumType.STRING)
@@ -60,7 +62,7 @@ public class Game {
     @Column(name = "marketType")
     private String marketType;
 
-    @Column(name = "companyName")
+    @Column(name = "companyName",columnDefinition = "NVARCHAR2(2000)")
     private String companyName;
 
     @CreatedDate
@@ -74,9 +76,6 @@ public class Game {
     @Transient
     private String previewUrl;
 
-
-    @OneToMany(mappedBy = "game")
-    Set<SmartTagGame> smartTagGames;
 
     public enum Status {
         ACTIVE,

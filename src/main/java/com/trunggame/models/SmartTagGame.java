@@ -12,18 +12,17 @@ import javax.persistence.*;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@Table(name = "`smart_tag_game`")
 @Entity
 public class SmartTagGame {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "tag_id")
-    SmartTag smartTag;
+    @Column(name = "smart_tag_id", nullable = false)
+    private Long smartTagId;
 
-    @ManyToOne
-    @JoinColumn(name = "game_id")
-    Game game;
+    @Column(name = "game_id", nullable = false)
+    private Long gameId;
 
 }

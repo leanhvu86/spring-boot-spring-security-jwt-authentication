@@ -57,11 +57,8 @@ public class AuthController {
   @Autowired
   JwtUtils jwtUtils;
 
-//  @Autowired
-//  UserService userService;
-
-  @Value("${default.password}")
-  private String defaultPassword;
+  @Autowired
+  UserService userService;
 
 //  @ApiOperation(value = "Create a new user", response = BaseResponseDTO.class)
   @PostMapping("/signin")
@@ -99,7 +96,7 @@ public class AuthController {
     // Create new user's account
     User user = new User(signUpRequest.getUsername(),
                signUpRequest.getEmail(),
-               encoder.encode(defaultPassword), signUpRequest.getPhoneNumber(),signUpRequest.getFullName(),
+            encoder.encode(signUpRequest.getPassword()), signUpRequest.getPhoneNumber(),signUpRequest.getFullName(),
             signUpRequest.getAddress(), EUserStatus.ACTIVE);
 
     Set<String> strRoles = signUpRequest.getRole();
@@ -133,7 +130,7 @@ public class AuthController {
 
     user.setRoles(roles);
     userRepository.save(user);
-//    userService.sendEmailRegister(user);
+    //userService.sendEmailRegister(user);
     return new BaseResponseDTO<>("User registered successfully!", 200, 200,null);
   }
 }

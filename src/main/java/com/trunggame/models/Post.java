@@ -20,13 +20,13 @@ public class Post {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "title")
+    @Column(name = "title",columnDefinition = "NVARCHAR2(5000)")
     private String title;
 
     @Column(name = "contentEN")
     private String contentEN;
 
-    @Column(name = "contentVI")
+    @Column(name = "contentVI",columnDefinition = "NVARCHAR2(5000)")
     private String contentVI;
 
     @Column(name = "imageId")
@@ -38,7 +38,7 @@ public class Post {
     @Column(name = "link")
     private String link;
 
-    @Column(name = "author")
+    @Column(name = "author",columnDefinition = "NVARCHAR2(5000)")
     private String author;
 
     @CreatedDate

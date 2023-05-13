@@ -53,12 +53,7 @@ public class GameController {
 
     @GetMapping("")
     public BaseResponseDTO<?> getListGame(Pageable pageable) {
-        var games = gameRepositoryCustom.getAllInformation();
-        for(var game : games) {
-            var gamePackages =  gamePackageRepository.findAllByGameId(game.getId());
-            game.setGamePackages(gamePackages);
-        }
-        return new BaseResponseDTO<>("Success", 200,200,games);
+        return new BaseResponseDTO<>("Success", 200,200,gameService.getListGame());
     }
 
     @GetMapping("/{id}")

@@ -17,7 +17,7 @@ public class GameRepositoryCustom {
     public List<GameInformationDTO> getAllInformation() {
 
         String sql =
-                "SELECT s.id," +
+                "SELECT distinct s.id," +
                         "       s.name," +
                         "       s.description," +
                         "       s.status," +
@@ -69,7 +69,6 @@ public class GameRepositoryCustom {
                 .contentEn(rs.getString("contentEn"))
                 .contentVi(rs.getString("contentVi"))
                 .descriptionEn(rs.getString("descriptionEn"))
-                .tags(rs.getString("tags"))
                 .build());
     }
 }

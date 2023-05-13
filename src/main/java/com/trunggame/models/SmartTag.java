@@ -1,5 +1,6 @@
 package com.trunggame.models;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -28,7 +29,7 @@ public class SmartTag {
     @Column(name = "nameEn", nullable = false)
     private String nameEn;
 
-    @Column(name = "description",nullable = false)
+    @Column(name = "description",columnDefinition = "NVARCHAR2(5000)")
     private String description;
 
     @Column(name = "color",nullable = false)
@@ -36,9 +37,6 @@ public class SmartTag {
 
     @Column(name = "status",nullable = false)
     private String status;
-
-    @OneToMany(mappedBy = "smartTag")
-    Set<SmartTagGame> smartTagGames;
 
     @CreatedDate
     @Column(name = "created_at", nullable = false, updatable = false)

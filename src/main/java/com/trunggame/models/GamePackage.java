@@ -21,6 +21,7 @@ public class GamePackage {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(name = "name",columnDefinition = "NVARCHAR2(5000)")
     private String name;
 
     private double price;
@@ -31,14 +32,17 @@ public class GamePackage {
 
     private String serverGroup;
 
+    @Column(name = "server",columnDefinition = "NVARCHAR2(5000)")
     private String server;
 
+    @Column(name = "attribute",columnDefinition = "NVARCHAR2(5000)")
     private String attribute;
 
     private int warehouseQuantity;
 
     private int tradeCount;
 
+    @Column(name = "description_vi",columnDefinition = "NVARCHAR2(5000)")
     private String descriptionVi;
 
     private String descriptionEn;

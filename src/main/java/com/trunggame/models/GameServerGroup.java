@@ -1,6 +1,5 @@
 package com.trunggame.models;
 
-import com.trunggame.enums.ECategoryStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -10,34 +9,21 @@ import org.springframework.data.annotation.LastModifiedDate;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
-import java.util.HashSet;
-import java.util.Set;
 
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "`game_categories`")
-public class GameCategories {
-    
+@Table(name = "`game_server_group`")
+public class GameServerGroup {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "name", nullable = false,columnDefinition = "NVARCHAR2(2000)")
-    private String name;
+    private Long gameId;
 
-
-    @Column(name = "description",columnDefinition = "NVARCHAR2(2000)")
-    private String description;
-
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private ECategoryStatus status;
-
-    @Column(name = "parent_id")
-    private Long parentId;
+    private Long serverGroupId;
 
     @CreatedDate
     @Column(name = "created_at", nullable = false, updatable = false)
@@ -47,4 +33,3 @@ public class GameCategories {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 }
-

@@ -23,7 +23,7 @@ public class GameCharacter {
     @Column(nullable = false)
     private String name;
 
-    @Column(name = "description")
+    @Column(name = "description",columnDefinition = "NVARCHAR2(2000)")
     private String description;
 
     @Enumerated(EnumType.STRING)
