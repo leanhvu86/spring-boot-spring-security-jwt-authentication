@@ -41,7 +41,7 @@ public class User {
 
 
     @NotBlank
-    @Size(max = 15)
+    @Size(max = 100)
     @Column(name = "full_name")
     private String fullName;
 
@@ -50,7 +50,7 @@ public class User {
     private EUserStatus status;
 
     @NotBlank
-    @Size(max = 15)
+    @Size(max = 200)
     @Column(name = "address")
     private String address;
 
