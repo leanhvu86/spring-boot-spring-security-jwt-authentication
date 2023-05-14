@@ -54,6 +54,12 @@ public class GamePackage {
 
     private String status;
 
+    @Column(name = "image_id")
+    private String imageId;
+
+    @Transient
+    private String previewUrl;
+
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt = LocalDateTime.now();
 

@@ -43,95 +43,97 @@ import java.util.stream.Collectors;
 @RequestMapping("/api/auth")
 public class AuthController {
 
-  @Autowired
-  AuthenticationManager authenticationManager;
+    @Autowired
+    AuthenticationManager authenticationManager;
 
-  @Autowired
-  UserRepository userRepository;
+    @Autowired
+    UserRepository userRepository;
 
-  @Autowired
-  RoleRepository roleRepository;
+    @Autowired
+    RoleRepository roleRepository;
 
-  @Autowired
-  PasswordEncoder encoder;
+    @Autowired
+    PasswordEncoder encoder;
 
-  @Autowired
-  JwtUtils jwtUtils;
+    @Autowired
+    JwtUtils jwtUtils;
 
-  @Autowired
-  UserService userService;
+    @Autowired
+    UserService userService;
 
-//  @ApiOperation(value = "Create a new user", response = BaseResponseDTO.class)
-  @PostMapping("/signin")
-  public BaseResponseDTO<JwtResponseDTO> authenticateUser(@Valid @RequestBody LoginRequestDTO loginRequest) {
+    @Value("${default.password}")
+    private String defaultPassword;
 
-    Authentication authentication = authenticationManager.authenticate(
-        new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
+    @PostMapping("/signin")
+    public BaseResponseDTO<JwtResponseDTO> authenticateUser(@Valid @RequestBody LoginRequestDTO loginRequest) {
 
-    SecurityContextHolder.getContext().setAuthentication(authentication);
-    String jwt = jwtUtils.generateJwtToken(authentication);
-    
-    UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();    
-    List<String> roles = userDetails.getAuthorities().stream()
-        .map(item -> item.getAuthority())
-        .collect(Collectors.toList());
+        Authentication authentication = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
 
-    return new BaseResponseDTO<>("Success",200,200,new JwtResponseDTO(jwt,
-            userDetails.getId(),
-            userDetails.getUsername(),
-            userDetails.getEmail(),
-            roles, userDetails.getAddress(), userDetails.getFullName(), userDetails.getPhoneNumber()));
-  }
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+        String jwt = jwtUtils.generateJwtToken(authentication);
 
-//  @ApiOperation(value = "Login", response = BaseResponseDTO.class)
-  @PostMapping("/signup")
-  public BaseResponseDTO<?> registerUser(@Valid @RequestBody SignupRequestDTO signUpRequest) throws MessagingException {
-    if (userRepository.existsByUsername(signUpRequest.getUsername())) {
-      return new BaseResponseDTO<>("Error: Username is already taken!", 400, 400,null);
+        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
+        List<String> roles = userDetails.getAuthorities().stream()
+                .map(item -> item.getAuthority())
+                .collect(Collectors.toList());
+
+        return new BaseResponseDTO<>("Success", 200, 200, new JwtResponseDTO(jwt,
+                userDetails.getId(),
+                userDetails.getUsername(),
+                userDetails.getEmail(),
+                roles, userDetails.getAddress(), userDetails.getFullName(), userDetails.getPhoneNumber()));
     }
 
-    if (userRepository.existsByEmail(signUpRequest.getEmail())) {
-      return new BaseResponseDTO<>("Error: Email is already in use!", 400, 400,null);
-    }
-
-    // Create new user's account
-    User user = new User(signUpRequest.getUsername(),
-               signUpRequest.getEmail(),
-            encoder.encode(signUpRequest.getPassword()), signUpRequest.getPhoneNumber(),signUpRequest.getFullName(),
-            signUpRequest.getAddress(), EUserStatus.ACTIVE);
-
-    Set<String> strRoles = signUpRequest.getRole();
-    Set<Role> roles = new HashSet<>();
-
-    if (strRoles == null) {
-      Role userRole = roleRepository.findByName(ERole.ROLE_USER)
-          .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-      roles.add(userRole);
-    } else {
-      strRoles.forEach(role -> {
-        switch (role) {
-        case "admin":
-          Role adminRole = roleRepository.findByName(ERole.ROLE_ADMIN)
-              .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-          roles.add(adminRole);
-          break;
-        case "mod":
-          Role modRole = roleRepository.findByName(ERole.ROLE_MODERATOR)
-              .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-          roles.add(modRole);
-
-          break;
-        default:
-          Role userRole = roleRepository.findByName(ERole.ROLE_USER)
-              .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-          roles.add(userRole);
+    //  @ApiOperation(value = "Login", response = BaseResponseDTO.class)
+    @PostMapping("/signup")
+    public BaseResponseDTO<?> registerUser(@Valid @RequestBody SignupRequestDTO signUpRequest) throws MessagingException {
+        if (userRepository.existsByUsername(signUpRequest.getUsername())) {
+            return new BaseResponseDTO<>("Error: Username is already taken!", 400, 400, null);
         }
-      });
-    }
 
-    user.setRoles(roles);
-    userRepository.save(user);
-    //userService.sendEmailRegister(user);
-    return new BaseResponseDTO<>("User registered successfully!", 200, 200,null);
-  }
+        if (userRepository.existsByEmail(signUpRequest.getEmail())) {
+            return new BaseResponseDTO<>("Error: Email is already in use!", 400, 400, null);
+        }
+
+        // Create new user's account
+        User user = new User(signUpRequest.getUsername(),
+                signUpRequest.getEmail(),
+                encoder.encode(this.defaultPassword), signUpRequest.getPhoneNumber(), signUpRequest.getFullName(),
+                signUpRequest.getAddress(), EUserStatus.ACTIVE);
+
+        Set<String> strRoles = signUpRequest.getRole();
+        Set<Role> roles = new HashSet<>();
+
+        if (strRoles == null) {
+            Role userRole = roleRepository.findByName(ERole.ROLE_USER)
+                    .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+            roles.add(userRole);
+        } else {
+            strRoles.forEach(role -> {
+                switch (role) {
+                    case "admin":
+                        Role adminRole = roleRepository.findByName(ERole.ROLE_ADMIN)
+                                .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+                        roles.add(adminRole);
+                        break;
+                    case "mod":
+                        Role modRole = roleRepository.findByName(ERole.ROLE_MODERATOR)
+                                .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+                        roles.add(modRole);
+
+                        break;
+                    default:
+                        Role userRole = roleRepository.findByName(ERole.ROLE_USER)
+                                .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+                        roles.add(userRole);
+                }
+            });
+        }
+
+        user.setRoles(roles);
+        userRepository.save(user);
+        //userService.sendEmailRegister(user);
+        return new BaseResponseDTO<>("User registered successfully!", 200, 200, null);
+    }
 }
