@@ -30,6 +30,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public void activeUserByIds(List ids) {
+        userRepository.activeUserByIds(ids);
+    }
+
+    @Override
     public Boolean sendEmailRegister(User user) throws MessagingException {
 
         String html = "<h2>Hi " + user.getUsername() + "</h2><br/>" +

@@ -62,6 +62,9 @@ public class Game {
     @Column(name = "marketType")
     private String marketType;
 
+    @Column(name = "gamePriority")
+    private String gamePriority;
+
     @Column(name = "companyName", columnDefinition = "VARCHAR(5000) CHARACTER SET utf8")
     private String companyName;
 

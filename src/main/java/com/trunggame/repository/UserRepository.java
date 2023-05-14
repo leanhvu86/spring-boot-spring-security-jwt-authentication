@@ -14,7 +14,9 @@ import java.util.Optional;
 public interface UserRepository extends JpaRepository<User, Long> {
 
     Optional<User> findByUsername(String username);
+
     Boolean existsByUsername(String username);
+
     Boolean existsByEmail(String email);
 
     @Transactional
@@ -22,6 +24,9 @@ public interface UserRepository extends JpaRepository<User, Long> {
     @Query(value = "UPDATE users SET status = 'DELETED' WHERE id IN (:ids) ", nativeQuery = true)
     void deleteUserByIds(List<Integer> ids);
 
-
+    @Transactional
+    @Modifying
+    @Query(value = "UPDATE users SET status = 'ACTIVE' WHERE id IN (:ids) ", nativeQuery = true)
+    void activeUserByIds(List<Integer> ids);
 
 }

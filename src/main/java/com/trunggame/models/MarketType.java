@@ -1,10 +1,15 @@
 package com.trunggame.models;
 
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+
 import javax.persistence.*;
 
 @Entity
 @Table(name = "market_type")
+@Builder
+@AllArgsConstructor
 public class MarketType {
 
     @Id

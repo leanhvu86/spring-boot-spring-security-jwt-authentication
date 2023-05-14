@@ -4,10 +4,7 @@ import com.trunggame.dto.BaseResponseDTO;
 import com.trunggame.dto.GameInformationDTO;
 import com.trunggame.dto.GameInputDTO;
 import com.trunggame.enums.ECommonStatus;
-import com.trunggame.models.Game;
-import com.trunggame.models.GameServerGroup;
-import com.trunggame.models.Price;
-import com.trunggame.models.SmartTagGame;
+import com.trunggame.models.*;
 import com.trunggame.repository.*;
 import com.trunggame.repository.impl.GameRepositoryCustom;
 import com.trunggame.security.services.GameService;
@@ -62,6 +59,12 @@ public class GameServiceImpl  implements GameService {
     @Autowired
     PackageRepository gamePackageRepository;
 
+    @Autowired
+    CompanyRepository companyRepository;
+
+    @Autowired
+    MarketTypeRepository marketTypeRepository;
+
     @Override
     @Transactional
     public BaseResponseDTO<?> createGame(GameInputDTO input) {
@@ -110,6 +113,18 @@ public class GameServiceImpl  implements GameService {
                 .updatedAt(LocalDateTime.now()).build();
 
         priceRepository.save(price);
+
+        // Create company builder
+        var company = Company.builder()
+                .name(input.getCompanyName()).build();
+
+        companyRepository.save(company);
+
+        // Create company builder
+        var marketType = MarketType.builder()
+                .name(input.getCompanyName()).build();
+
+        marketTypeRepository.save(marketType);
 
 
         // save tags and game
@@ -161,7 +176,7 @@ public class GameServiceImpl  implements GameService {
             validateInput(input);
 
             // Delete old files
-            List<String> uniqIds = Arrays.asList(input.getImageId(), input.getThumbnail());
+            List<String> uniqIds = Arrays.asList(gameEntity.get().getImageId(), gameEntity.get().getThumbnail());
             fileRepository.updateFileLinkToGame(uniqIds);
 
             // Delete all tags
@@ -183,6 +198,7 @@ public class GameServiceImpl  implements GameService {
             gameEntity.get().setContentEn(input.getContentEn());
             gameEntity.get().setContentVi(input.getContentVi());
             gameEntity.get().setMarketType(input.getMarketType());
+            gameEntity.get().setGamePriority(input.getGamePriority());
             gameEntity.get().setYoutubeLink(input.getYoutubeLink());
             gameEntity.get().setDescriptionEn(input.getDescriptionEn());
             var gameSaved = gameRepository.saveAndFlush(gameEntity.get());

@@ -73,6 +73,16 @@ public class UserController {
         return new BaseResponseDTO<>("Delete users successfully", 200,200,null);
     }
 
+    @PostMapping("/active")
+    @PreAuthorize("hasRole('ADMIN')")
+    public BaseResponseDTO<?> activeUserByIds(@RequestBody UserDeleteDTO userDeleteDTO) {
+        if (userDeleteDTO.getIds().isEmpty()) {
+            return new BaseResponseDTO<>("User not found", 403,403,null);
+        }
+        userService.activeUserByIds(userDeleteDTO.getIds());
+        return new BaseResponseDTO<>("Active users successfully", 200,200,null);
+    }
+
     @PostMapping("/update")
     @PreAuthorize("hasRole('ADMIN')")
     public BaseResponseDTO<?> updateUser(@RequestBody UserUpdateDTO userUpdateDTO) {

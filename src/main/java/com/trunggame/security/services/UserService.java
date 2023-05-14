@@ -7,6 +7,7 @@ import java.util.List;
 
 public interface UserService {
     void deleteUserByIds(List ids);
+    void activeUserByIds(List ids);
 
     Boolean sendEmailRegister(User user) throws MessagingException;
 

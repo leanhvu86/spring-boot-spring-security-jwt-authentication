@@ -12,6 +12,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
+@CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
 @RequestMapping("/posts")
 public class PostController {
@@ -22,12 +23,7 @@ public class PostController {
     @GetMapping("/{id}")
     public BaseResponseDTO<?> getPostById(@PathVariable Long id) {
         Optional<Post> optionalPost = postRepository.findById(id);
-        if (optionalPost.isPresent()) {
-            return new BaseResponseDTO<>("Success" , 200, 200,optionalPost.get());
-
-        } else {
-            return new BaseResponseDTO<>("Content not found" , 400, 400,optionalPost.get());
-        }
+        return optionalPost.<BaseResponseDTO<?>>map(post -> new BaseResponseDTO<>("Success", 200, 200, post)).orElseGet(() -> new BaseResponseDTO<>("Content not found", 400, 400, optionalPost.get()));
     }
 
     @PostMapping
@@ -42,12 +38,12 @@ public class PostController {
         entityPost.setAuthor(post.getAuthor());
         entityPost.setPostDate(new Date());
         Post savedPost = postRepository.save(entityPost);
-        return new BaseResponseDTO<>("Success" , 200, 200,savedPost);
+        return new BaseResponseDTO<>("Success", 200, 200, savedPost);
     }
 
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public BaseResponseDTO<?>  updatePost(@PathVariable Long id, @RequestBody PostDTO post) {
+    public BaseResponseDTO<?> updatePost(@PathVariable Long id, @RequestBody PostDTO post) {
         Optional<Post> optionalPost = postRepository.findById(id);
         if (optionalPost.isPresent()) {
             Post existingPost = optionalPost.get();
@@ -58,30 +54,30 @@ public class PostController {
             existingPost.setLink(post.getLink());
             existingPost.setAuthor(post.getAuthor());
             postRepository.save(existingPost);
-            return new BaseResponseDTO<>("Success" , 200, 200,optionalPost.get());
+            return new BaseResponseDTO<>("Success", 200, 200, optionalPost.get());
 
         } else {
-            return new BaseResponseDTO<>("Fail" , 403, 403,null);
+            return new BaseResponseDTO<>("Fail", 403, 403, null);
         }
     }
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public BaseResponseDTO<?>  deletePost(@PathVariable Long id) {
+    public BaseResponseDTO<?> deletePost(@PathVariable Long id) {
         Optional<Post> optionalPost = postRepository.findById(id);
         if (optionalPost.isPresent()) {
             postRepository.delete(optionalPost.get());
-            return new BaseResponseDTO<>("Success" , 200, 200,optionalPost.get());
+            return new BaseResponseDTO<>("Success", 200, 200, optionalPost.get());
 
         } else {
-            return new BaseResponseDTO<>("Content not found" , 403, 403,null);
+            return new BaseResponseDTO<>("Content not found", 403, 403, null);
         }
     }
 
     @GetMapping
-    public BaseResponseDTO<?>  getAllPosts() {
+    public BaseResponseDTO<?> getAllPosts() {
         List<Post> posts = postRepository.findAll();
-        return new BaseResponseDTO<>("Success" , 200, 200,posts);
+        return new BaseResponseDTO<>("Success", 200, 200, posts);
     }
 }
 
