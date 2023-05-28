@@ -23,7 +23,9 @@ public class GameServerGroup {
 
     private Long gameId;
 
-    private Long serverGroupId;
+    private Long packageId;
+
+    private String name;
 
     @CreatedDate
     @Column(name = "created_at", nullable = false, updatable = false)

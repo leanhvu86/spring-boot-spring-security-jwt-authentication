@@ -32,9 +32,6 @@ public class GamePackage {
 
     private String serverGroup;
 
-    @Column(name = "server",columnDefinition = "VARCHAR(5000) CHARACTER SET utf8")
-    private String server;
-
     @Column(name = "attribute",columnDefinition = "VARCHAR(5000) CHARACTER SET utf8")
     private String attribute;
 
@@ -52,7 +49,9 @@ public class GamePackage {
 
     private Long gameId;
 
-    private String status;
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private GamePackage.Status status = GamePackage.Status.ACTIVE;
 
     @Column(name = "image_id")
     private String imageId;
@@ -65,4 +64,9 @@ public class GamePackage {
 
     @Column(name = "updated_at")
     private LocalDateTime updatedAt = LocalDateTime.now();
+
+    public enum Status {
+        ACTIVE,
+        INACTIVE
+    }
 }

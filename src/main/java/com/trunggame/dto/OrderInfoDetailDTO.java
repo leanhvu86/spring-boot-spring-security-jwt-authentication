@@ -23,7 +23,6 @@ public class OrderInfoDetailDTO {
     private Game game;
     private GamePackage gamePackage;
     private GameCategories gameCategories;
-    private List<ServerGroup> serverGroup;
     private String server;
     private String loginType;
     private String password;

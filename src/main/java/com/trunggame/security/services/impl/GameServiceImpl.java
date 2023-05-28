@@ -147,16 +147,6 @@ public class GameServiceImpl  implements GameService {
             smartTagGameRepository.saveAll(smartTagGames);
 
 
-            // Save game server group
-            if(input.getServerGroups().size() > 0) {
-                List<GameServerGroup> gameServerGroups = new ArrayList<>();
-                for(var gs : input.getServerGroups()) {
-                    gameServerGroups.add(GameServerGroup.builder().gameId(gameEntity.getId()).serverGroupId(gs).createdAt(LocalDateTime.now()).build());
-                }
-
-                gameServerGroupRepository.saveAll(gameServerGroups);
-
-            }
 
         }
 
@@ -175,9 +165,11 @@ public class GameServiceImpl  implements GameService {
         if(gameEntity.isPresent()) {
             validateInput(input);
 
-            // Delete old files
-            List<String> uniqIds = Arrays.asList(gameEntity.get().getImageId(), gameEntity.get().getThumbnail());
-            fileRepository.updateFileLinkToGame(uniqIds);
+            if(!Objects.equals(gameEntity.get().getImageId(), input.getImageId()) || !Objects.equals(gameEntity.get().getThumbnail(), input.getThumbnail())){
+                // Delete old files
+                List<String> uniqIds = Arrays.asList(gameEntity.get().getImageId(), gameEntity.get().getThumbnail());
+                fileRepository.updateFileLinkToGame(uniqIds);
+            }
 
             // Delete all tags
             var smartTagGameOpt = smartTagGameRepository.findByGameId(input.getId());
@@ -247,13 +239,6 @@ public class GameServiceImpl  implements GameService {
                     var odlGameServerGroup = gameServerGroupRepository.findAllByGameId(gameSaved.getId());
                     gameServerGroupRepository.deleteAll(odlGameServerGroup);
 
-                    // Save new game server group
-                    List<GameServerGroup> gameServerGroups = new ArrayList<>();
-                    for(var gs : input.getServerGroups()) {
-                        gameServerGroups.add(GameServerGroup.builder().gameId(gameSaved.getId()).serverGroupId(gs).createdAt(LocalDateTime.now()).build());
-                    }
-
-                    gameServerGroupRepository.saveAll(gameServerGroups);
 
                 }
             }

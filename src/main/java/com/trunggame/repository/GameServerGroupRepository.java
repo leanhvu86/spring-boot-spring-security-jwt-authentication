@@ -9,4 +9,5 @@ import java.util.List;
 @Repository
 public interface GameServerGroupRepository extends JpaRepository<GameServerGroup, Long> {
     List<GameServerGroup> findAllByGameId(Long gameId);
+    List<GameServerGroup> findAllByPackageId(Long gameId);
 }

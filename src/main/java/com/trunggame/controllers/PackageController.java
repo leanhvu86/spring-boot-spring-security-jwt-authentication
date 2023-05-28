@@ -2,9 +2,11 @@ package com.trunggame.controllers;
 
 import com.trunggame.constant.ConstantUtils;
 import com.trunggame.dto.BaseResponseDTO;
+import com.trunggame.dto.GamePackageDTO;
 import com.trunggame.models.GamePackage;
 import com.trunggame.repository.GameRepository;
 import com.trunggame.repository.PackageRepository;
+import com.trunggame.security.services.PackageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -15,7 +17,7 @@ import java.util.Optional;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
-@RequestMapping("/packages")
+@RequestMapping("/api/packages")
 public class PackageController {
     @Autowired
     private PackageRepository packageRepository;
@@ -23,27 +25,27 @@ public class PackageController {
     @Autowired
     private GameRepository gameRepository;
 
+    @Autowired
+    private PackageService packageService;
 
     // Create a new package
     @PostMapping
     @PreAuthorize("hasRole('ADMIN')")
-    public BaseResponseDTO<?> createPackage(@RequestBody GamePackage input) {
+    public BaseResponseDTO<?> createPackage(@RequestBody GamePackageDTO input) {
         // Check if the gameId already exists
         if (gameRepository.findById(input.getGameId()).isEmpty()) {
             return new BaseResponseDTO<>("No content", 403,403,null);
         }
         // Save the package
-        input.setCreatedAt(LocalDateTime.now());
-        input.setStatus(ConstantUtils.ACTIVE);
-        packageRepository.save(input);
+        packageService.createPackage(input);
         return new BaseResponseDTO<>("Success", 200,200,input);
     }
 
     // Read all packages
-    @GetMapping
+    @GetMapping("")
+    @PreAuthorize("hasRole('ADMIN')")
     public BaseResponseDTO<?>  getPackages() {
-        List<GamePackage> packages = packageRepository.findAll();
-        return new BaseResponseDTO<>("Success", 200,200,packages);
+        return new BaseResponseDTO<>("Success", 200,200,this.packageService.getAllPackage());
     }
 
     // Read a package by ID
@@ -62,25 +64,12 @@ public class PackageController {
     // Update a package by ID
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public BaseResponseDTO<?>  updatePackage(@PathVariable Long id, @RequestBody GamePackage newPackage) {
+    public BaseResponseDTO<?>  updatePackage(@PathVariable Long id, @RequestBody GamePackageDTO newPackage) {
         Optional<GamePackage> oldPackage = packageRepository.findById(id);
         if (oldPackage.isPresent()) {
-            GamePackage updatedPackage = oldPackage.get();
-            updatedPackage.setName(newPackage.getName());
-            updatedPackage.setPrice(newPackage.getPrice());
-            updatedPackage.setUnit(newPackage.getUnit());
-            updatedPackage.setRating(newPackage.getRating());
-            updatedPackage.setServerGroup(newPackage.getServerGroup());
-            updatedPackage.setServer(newPackage.getServer());
-            updatedPackage.setAttribute(newPackage.getAttribute());
-            updatedPackage.setWarehouseQuantity(newPackage.getWarehouseQuantity());
-            updatedPackage.setTradeCount(newPackage.getTradeCount());
-            updatedPackage.setDescriptionVi(newPackage.getDescriptionVi());
-            updatedPackage.setDescriptionEn(newPackage.getDescriptionEn());
-            updatedPackage.setDeliveryTime(newPackage.getDeliveryTime());
-            updatedPackage.setGameId(newPackage.getGameId());
-            packageRepository.save(updatedPackage);
-            return new BaseResponseDTO<>("Success", 200,200,updatedPackage);
+            this.packageService.updatePackage(newPackage);
+
+            return new BaseResponseDTO<>("Success", 200,200,newPackage);
 
         } else {
             return new BaseResponseDTO<>("No content", 403,403,null);

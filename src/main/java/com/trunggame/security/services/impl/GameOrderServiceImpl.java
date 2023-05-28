@@ -141,7 +141,6 @@ public class GameOrderServiceImpl implements GameOrderService {
                 var orderDetail = new OrderInfoDetailDTO();
                 var game = gameRepository.findById(Long.parseLong(orderDetailEntity.getGameId().toString()));
                 var serverGameGroup = gameServerGroupRepository.findAllByGameId(game.get().getId());
-                var gameGroup = serverGroupRepository.findAllByIdIn(serverGameGroup.stream().map(e -> e.getServerGroupId()).collect(Collectors.toList()));
                 var category = categoryRepository.findById(game.get().getCategoryId());
                 var pack  = packageRepository.findById(orderDetailEntity.getPackageId());
                             orderDetail.setId(gameOrder.get().getId());
@@ -156,7 +155,7 @@ public class GameOrderServiceImpl implements GameOrderService {
                 orderDetail.setGame(game.get());
                 orderDetail.setAccount(orderDetailEntity.getAccount());
                 orderDetail.setServer(orderDetailEntity.getServerName());
-                orderDetail.setServerGroup(gameGroup);
+                orderDetail.setServer(orderDetailEntity.getServerName());
                 orderDetail.setGameCategories(category.get());
                 orderDetails.add(orderDetail);
 
