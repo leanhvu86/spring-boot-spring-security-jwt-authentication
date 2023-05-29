@@ -22,8 +22,12 @@ public class User {
     private Long id;
 
     @NotBlank
-    @Size(max = 20)
+    @Size(max = 50)
     private String username;
+
+    @NotBlank
+    @Size(max = 20)
+    private String nickname;
 
     @NotBlank
     @Size(max = 50)
@@ -63,7 +67,8 @@ public class User {
     public User() {
     }
 
-    public User(String username, String email, String password, String phoneNumber, String fullName, String address, EUserStatus status) {
+    public User(String nickname, String username, String email, String password, String phoneNumber, String fullName, String address, EUserStatus status) {
+        this.nickname = nickname;
         this.username = username;
         this.email = email;
         this.password = password;
@@ -143,5 +148,13 @@ public class User {
 
     public void setStatus(EUserStatus status) {
         this.status = status;
+    }
+
+    public String getNickname() {
+        return nickname;
+    }
+
+    public void setNickname(String nickname) {
+        this.nickname = nickname;
     }
 }

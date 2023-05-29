@@ -21,6 +21,10 @@ import javax.validation.constraints.*;
 public class SignupRequestDTO {
   @NotBlank
   @Size(min = 3, max = 20)
+  private String nickname;
+
+  @NotBlank
+  @Size(min = 3, max = 50)
   private String username;
 
   @NotBlank

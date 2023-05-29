@@ -20,7 +20,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 
-
 /**
  * @author congn kma
  * @since 7/12/2023
@@ -59,7 +58,7 @@ public class UserController {
     @PreAuthorize("hasRole('ADMIN')")
     public BaseResponseDTO<Page<User>> getListUser(Pageable pageable, String search) {
         Page<User> users = userRepositoryCustom.getListUser(search, pageable);
-        return new BaseResponseDTO<>("Success", 200,200,users);
+        return new BaseResponseDTO<>("Success", 200, 200, users);
     }
 
 
@@ -67,42 +66,36 @@ public class UserController {
     @PreAuthorize("hasRole('ADMIN')")
     public BaseResponseDTO<?> deleteUserByIds(@RequestBody UserDeleteDTO userDeleteDTO) {
         if (userDeleteDTO.getIds().isEmpty()) {
-            return new BaseResponseDTO<>("Error deleting user", 403,403,null);
+            return new BaseResponseDTO<>("Error deleting user", 403, 403, null);
         }
         userService.deleteUserByIds(userDeleteDTO.getIds());
-        return new BaseResponseDTO<>("Delete users successfully", 200,200,null);
+        return new BaseResponseDTO<>("Delete users successfully", 200, 200, null);
     }
 
     @PostMapping("/active")
     @PreAuthorize("hasRole('ADMIN')")
     public BaseResponseDTO<?> activeUserByIds(@RequestBody UserDeleteDTO userDeleteDTO) {
         if (userDeleteDTO.getIds().isEmpty()) {
-            return new BaseResponseDTO<>("User not found", 403,403,null);
+            return new BaseResponseDTO<>("User not found", 403, 403, null);
         }
         userService.activeUserByIds(userDeleteDTO.getIds());
-        return new BaseResponseDTO<>("Active users successfully", 200,200,null);
+        return new BaseResponseDTO<>("Active users successfully", 200, 200, null);
     }
 
     @PostMapping("/update")
-    @PreAuthorize("hasRole('ADMIN')")
     public BaseResponseDTO<?> updateUser(@RequestBody UserUpdateDTO userUpdateDTO) {
         var userOPT = userRepository.findById(userUpdateDTO.getId());
 
         if (userOPT.isPresent()) {
-           var currentUser = userOPT.get();
+            var currentUser = userOPT.get();
+            currentUser.setNickname(userUpdateDTO.getNickname());
             currentUser.setAddress(userUpdateDTO.getAddress());
             currentUser.setFullName(userUpdateDTO.getFullName());
             currentUser.setPhoneNumber(userUpdateDTO.getPhoneNumber());
             userRepository.save(currentUser);
-            return new BaseResponseDTO<>("Success", 200,200,null);
-
+            return new BaseResponseDTO<>("Success", 200, 200, null);
         }
-
-        return new BaseResponseDTO<>("Error deleting user", 400,400,null);
+        return new BaseResponseDTO<>("Error deleting user", 400, 400, null);
     }
-
-
-
-
 
 }

@@ -16,4 +16,5 @@ public class UserUpdateDTO implements Serializable {
     private String phoneNumber;
     private String address;
     private  String fullName;
+    private  String nickname;
 }
