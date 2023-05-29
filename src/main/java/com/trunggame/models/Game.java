@@ -27,10 +27,11 @@ public class Game {
     @Column(nullable = false)
     private String name;
 
-    @Column(name = "description", columnDefinition = "VARCHAR CHARACTER SET utf8")
+    @Column(name = "description",length = 10000, columnDefinition = "TEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci")
+
     private String description;
 
-    @Column(name = "description_en", columnDefinition = "VARCHAR CHARACTER SET utf8")
+    @Column(name = "description_en",length = 10000, columnDefinition = "TEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci")
     private String descriptionEn;
 
     @Enumerated(EnumType.STRING)
@@ -53,10 +54,10 @@ public class Game {
     @Column(name = "youtubeLink")
     private String youtubeLink;
 
-    @Column(name = "content_vi", columnDefinition = "VARCHAR(5000) CHARACTER SET utf8")
+    @Column(name = "content_vi",length = 10000, columnDefinition = "TEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci")
     private String contentVi;
 
-    @Column(name = "content_en", columnDefinition = "VARCHAR(5000) CHARACTER SET utf8")
+    @Column(name = "content_en",length = 10000, columnDefinition = "TEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci")
     private String contentEn;
 
     @Column(name = "marketType")
@@ -65,7 +66,7 @@ public class Game {
     @Column(name = "gamePriority")
     private String gamePriority;
 
-    @Column(name = "companyName", columnDefinition = "VARCHAR(5000) CHARACTER SET utf8")
+    @Column(name = "companyName",length = 10000, columnDefinition = "TEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci")
     private String companyName;
 
     @CreatedDate

@@ -21,7 +21,7 @@ public class GamePackage {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "name",columnDefinition = "VARCHAR(5000) CHARACTER SET utf8")
+    @Column(name = "name",length = 10000, columnDefinition = "TEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci")
     private String name;
 
     private double price;
@@ -32,17 +32,17 @@ public class GamePackage {
 
     private String serverGroup;
 
-    @Column(name = "attribute",columnDefinition = "VARCHAR(5000) CHARACTER SET utf8")
+    @Column(name = "attribute",length = 10000, columnDefinition = "TEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci")
     private String attribute;
 
     private int warehouseQuantity;
 
     private int tradeCount;
 
-    @Column(name = "description_vi",columnDefinition = "VARCHAR CHARACTER SET utf8")
+    @Column(name = "description_vi",length = 10000, columnDefinition = "TEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci")
     private String descriptionVi;
 
-    @Column(name = "description_en",columnDefinition = "VARCHAR CHARACTER SET utf8")
+    @Column(name = "description_en",length = 10000, columnDefinition = "TEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci")
     private String descriptionEn;
 
     private int deliveryTime;

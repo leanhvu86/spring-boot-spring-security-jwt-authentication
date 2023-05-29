@@ -29,7 +29,7 @@ public class SmartTag {
     @Column(name = "nameEn", nullable = false)
     private String nameEn;
 
-    @Column(name = "description",columnDefinition = "NVARCHAR2(5000)")
+    @Column(name = "description",length = 10000, columnDefinition = "TEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci")
     private String description;
 
     @Column(name = "color",nullable = false)

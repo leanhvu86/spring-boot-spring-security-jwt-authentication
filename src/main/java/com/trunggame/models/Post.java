@@ -20,13 +20,13 @@ public class Post {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "title",columnDefinition = "VARCHAR(5000) CHARACTER SET utf8")
+    @Column(name = "title",length = 10000, columnDefinition = "TEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci")
     private String title;
 
     @Column(name = "contentEN")
     private String contentEN;
 
-    @Column(name = "contentVI",columnDefinition = "VARCHAR CHARACTER SET utf8")
+    @Column(name = "contentVI",length = 10000, columnDefinition = "TEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci")
     private String contentVI;
 
     @Column(name = "imageId")
@@ -38,7 +38,7 @@ public class Post {
     @Column(name = "link")
     private String link;
 
-    @Column(name = "author",columnDefinition = "VARCHAR CHARACTER SET utf8")
+    @Column(name = "author",columnDefinition = "VARCHAR(5000) CHARACTER SET utf8")
     private String author;
 
     @CreatedDate
