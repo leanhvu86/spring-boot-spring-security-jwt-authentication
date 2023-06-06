@@ -1,30 +1,36 @@
 package com.trunggame.models;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
+@Entity
+@Table(name = "banner")
 @Data
 @Builder
-@AllArgsConstructor
+@Getter
+@Setter
 @NoArgsConstructor
-@Entity
-@Table(name = "`banner`")
+@AllArgsConstructor
 public class Banner {
+
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "status", nullable = false)
-    private Integer status;
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private Banner.Status status = Banner.Status.ACTIVE;
 
-    @Column(name = "file_id", nullable = false)
-    private Integer fileId;
+    @NonNull
+    @Column(nullable = false, length = 255)
+    private String fileId;
+
+    @Column(name = "imageUrl")
+    private String imageUrl;
 
     @CreatedDate
     @Column(name = "created_at", nullable = false, updatable = false)
@@ -33,5 +39,10 @@ public class Banner {
     @LastModifiedDate
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
+
+    public enum Status {
+        ACTIVE,
+        INACTIVE
+    }
 }
 

@@ -3,6 +3,7 @@ package com.trunggame.controllers;
 import com.trunggame.dto.BaseResponseDTO;
 import com.trunggame.dto.PostDTO;
 import com.trunggame.models.Post;
+import com.trunggame.repository.FileRepository;
 import com.trunggame.repository.PostRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -14,11 +15,14 @@ import java.util.Optional;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
-@RequestMapping("/posts")
+@RequestMapping("/api/posts")
 public class PostController {
 
     @Autowired
     private PostRepository postRepository;
+
+    @Autowired
+    private FileRepository fileRepository;
 
     @GetMapping("/{id}")
     public BaseResponseDTO<?> getPostById(@PathVariable Long id) {
@@ -37,6 +41,9 @@ public class PostController {
         entityPost.setLink(post.getLink());
         entityPost.setAuthor(post.getAuthor());
         entityPost.setPostDate(new Date());
+
+        var file = fileRepository.findFirstByUniqId(post.getImageId());
+        entityPost.setImageUrl(file.get().getPreviewUrl());
         Post savedPost = postRepository.save(entityPost);
         return new BaseResponseDTO<>("Success", 200, 200, savedPost);
     }
@@ -50,31 +57,41 @@ public class PostController {
             existingPost.setTitle(post.getTitle());
             existingPost.setContentEN(post.getContentEN());
             existingPost.setContentVI(post.getContentVI());
-            existingPost.setImageUrl(post.getImageUrl());
             existingPost.setLink(post.getLink());
             existingPost.setAuthor(post.getAuthor());
+            if (existingPost.getImageId() != post.getImageId()) {
+                existingPost.setImageId(post.getImageId());
+                var file = fileRepository.findFirstByUniqId(post.getImageId());
+                existingPost.setImageUrl(file.get().getPreviewUrl());
+            }
+
             postRepository.save(existingPost);
             return new BaseResponseDTO<>("Success", 200, 200, optionalPost.get());
-
         } else {
             return new BaseResponseDTO<>("Fail", 403, 403, null);
         }
     }
 
-    @DeleteMapping("/{id}")
+    @PostMapping("/change-status/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public BaseResponseDTO<?> deletePost(@PathVariable Long id) {
+    public BaseResponseDTO<?> changeStatus(@PathVariable Long id) {
         Optional<Post> optionalPost = postRepository.findById(id);
         if (optionalPost.isPresent()) {
-            postRepository.delete(optionalPost.get());
-            return new BaseResponseDTO<>("Success", 200, 200, optionalPost.get());
+            var post = optionalPost.get();
+            if (post.getStatus() == Post.Status.ACTIVE)
+                post.setStatus(Post.Status.INACTIVE);
+            else
+                post.setStatus(Post.Status.ACTIVE);
 
+            postRepository.save(post);
+
+            return new BaseResponseDTO<>("Success", 200, 200, optionalPost.get());
         } else {
             return new BaseResponseDTO<>("Content not found", 403, 403, null);
         }
     }
 
-    @GetMapping
+    @GetMapping("")
     public BaseResponseDTO<?> getAllPosts() {
         List<Post> posts = postRepository.findAll();
         return new BaseResponseDTO<>("Success", 200, 200, posts);

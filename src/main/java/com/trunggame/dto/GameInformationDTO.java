@@ -19,6 +19,7 @@ public class GameInformationDTO {
     private String name;
     private String description;
     private String status;
+    private String hot;
     private String type;
     private Long categoryId;
     private String categoryName;
@@ -33,6 +34,7 @@ public class GameInformationDTO {
     private String contentEn;
     private String contentVi;
     private String descriptionEn;
+    private String gamePriority;
     private List<String> tags;
     private List<GamePackage> gamePackages;
     private List<GameServerGroup> server;

@@ -11,4 +11,5 @@ public interface PackageRepository extends JpaRepository<GamePackage, Long> {
     boolean existsByGameId(String gameId);
 
     List<GamePackage> findAllByGameId(Long gameId);
+
 }

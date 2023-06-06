@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 @Builder
@@ -59,13 +60,24 @@ public class GamePackage {
     @Transient
     private String previewUrl;
 
+    @Transient
+    private List<GameServerGroup> server;
+
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt = LocalDateTime.now();
 
     @Column(name = "updated_at")
     private LocalDateTime updatedAt = LocalDateTime.now();
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private GamePackage.TopSaleStatus topSale = TopSaleStatus.INACTIVE;
+
     public enum Status {
+        ACTIVE,
+        INACTIVE
+    }
+    public enum TopSaleStatus {
         ACTIVE,
         INACTIVE
     }

@@ -1,6 +1,7 @@
 package com.trunggame.dto;
 
 
+import com.trunggame.models.GamePackage;
 import com.trunggame.models.GameServerGroup;
 import lombok.Builder;
 import lombok.Data;
@@ -28,6 +29,7 @@ public class GamePackageDTO {
     private String serverGroup;
 
     private List<GameServerGroup> server;
+    private List<GameServerGroup> removeServer;
 
     private String attribute;
 
@@ -48,5 +50,7 @@ public class GamePackageDTO {
     private String imageId;
 
     private String previewUrl;
+
+    private String topSale;
 
 }

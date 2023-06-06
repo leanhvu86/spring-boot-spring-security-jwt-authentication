@@ -48,16 +48,7 @@ public class PackageServiceImpl implements PackageService {
     private UserRepository userRepository;
 
     @Autowired
-    private SmartTagRepository smartTagRepository;
-
-    @Autowired
-    private SmartTagGameRepository smartTagGameRepository;
-
-    @Autowired
     private GameServerGroupRepository gameServerGroupRepository;
-
-    @Autowired
-    private GameRepositoryCustom gameRepositoryCustom;
 
     @Autowired
     private PackageRepository gamePackageRepository;
@@ -86,8 +77,10 @@ public class PackageServiceImpl implements PackageService {
                 .attribute(input.getAttribute())
                 .warehouseQuantity(input.getWarehouseQuantity())
                 .descriptionVi(input.getDescriptionVi())
+                .descriptionEn(input.getDescriptionEn())
                 .gameId(input.getGameId())
                 .status(GamePackage.Status.ACTIVE)
+                .topSale(GamePackage.TopSaleStatus.INACTIVE)
                 .imageId(input.getImageId())
                 .createdAt(LocalDateTime.now())
                 .updatedAt(LocalDateTime.now())
@@ -95,7 +88,7 @@ public class PackageServiceImpl implements PackageService {
         var packageEntity = gamePackageRepository.save(gamePackage);
         packageEntity.setPreviewUrl(file.get().getPreviewUrl());
 
-        file.get().setOwnerId(gamePackage.getId());
+        file.get().setOwnerId(packageEntity.getId());
         fileRepository.save(file.get());
 
 
@@ -122,6 +115,7 @@ public class PackageServiceImpl implements PackageService {
         updatedPackage.setName(input.getName());
         updatedPackage.setPrice(input.getPrice());
         updatedPackage.setUnit(input.getUnit());
+        updatedPackage.setImageId(input.getImageId());
         updatedPackage.setRating(input.getRating());
         updatedPackage.setServerGroup(input.getServerGroup());
         updatedPackage.setAttribute(input.getAttribute());
@@ -131,20 +125,22 @@ public class PackageServiceImpl implements PackageService {
         updatedPackage.setDescriptionEn(input.getDescriptionEn());
         updatedPackage.setDeliveryTime(input.getDeliveryTime());
         updatedPackage.setGameId(input.getGameId());
+        updatedPackage.setTopSale(Objects.equals(input.getTopSale(), "ACTIVE") ?GamePackage.TopSaleStatus.ACTIVE:GamePackage.TopSaleStatus.INACTIVE);
         gamePackageRepository.save(updatedPackage);
+
+        List<GameServerGroup> gameServerOld;
+        gameServerOld = gameServerGroupRepository.findAllByPackageId(updatedPackage.getId());
+        for (var gs : gameServerOld) {
+            gameServerGroupRepository.deleteById(gs.getId());
+        }
 
         // Save game server group
         if (input.getServer().size() > 0) {
-            List<GameServerGroup> gameServerGroups = new ArrayList<>();
-            List<GameServerGroup> gameServerDelete;
-            gameServerDelete = gameServerGroupRepository.findAllByPackageId(updatedPackage.getId());
+            List<GameServerGroup> gameServerNew = new ArrayList<>();
             for (var gs : input.getServer()) {
-                gameServerGroups.add(GameServerGroup.builder().gameId(updatedPackage.getGameId()).packageId(updatedPackage.getId()).name(gs.getName()).createdAt(LocalDateTime.now()).build());
-                gameServerDelete.removeIf(e -> e.getId().equals(gs.getId()));
+                gameServerNew.add(GameServerGroup.builder().gameId(updatedPackage.getGameId()).packageId(updatedPackage.getId()).name(gs.getName()).createdAt(LocalDateTime.now()).build());
             }
-
-            gameServerGroupRepository.saveAll(gameServerGroups);
-            gameServerGroupRepository.deleteAll(gameServerDelete);
+            gameServerGroupRepository.saveAll(gameServerNew);
         }
 
         return new BaseResponseDTO<>("Success", 200, 200, null);

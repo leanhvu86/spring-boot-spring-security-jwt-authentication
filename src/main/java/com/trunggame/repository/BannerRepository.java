@@ -1,13 +1,13 @@
 package com.trunggame.repository;
 
-import com.trunggame.models.Post;
+import com.trunggame.models.Banner;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
 @Repository
-public interface PostRepository extends JpaRepository<Post, Long> {
+public interface BannerRepository extends JpaRepository<Banner, Long> {
 
-    List<Post> findByStatus(Post.Status status);
+    List<Banner>  findBannerByStatus(Banner.Status status);
 }

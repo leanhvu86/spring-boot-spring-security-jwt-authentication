@@ -21,6 +21,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
@@ -86,6 +87,21 @@ public class AuthController {
     }
 
     //  @ApiOperation(value = "Login", response = BaseResponseDTO.class)
+    @PostMapping("/auth")
+    public BaseResponseDTO<?> authUser() throws MessagingException {
+        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication()
+                .getPrincipal();
+        var currentUser = userRepository.findByUsername(userDetails.getUsername());
+
+        if(currentUser.isEmpty()) {
+            return new BaseResponseDTO<>("User does not exist", 400, 400,null);
+        }
+        else{
+            return new BaseResponseDTO<>("Token still work!", 200, 200, currentUser.get());
+
+        }
+    }
+
     @PostMapping("/signup")
     public BaseResponseDTO<?> registerUser(@Valid @RequestBody SignupRequestDTO signUpRequest) throws MessagingException {
         if (userRepository.existsByUsername(signUpRequest.getUsername())) {

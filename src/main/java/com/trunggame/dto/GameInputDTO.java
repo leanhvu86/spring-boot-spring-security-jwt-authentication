@@ -35,7 +35,7 @@ public class GameInputDTO {
     private String type;
 
     @JsonPropertyDescription("Độ ưu tiên của game: hot, new, sale off, gift, normal" +
-            "Lưu tương ứng xuống databse là 1-hot, 2-new, 3- sall off, 4 - gift, 5 - best seller ... tuỳ các thánh định nghĩa")
+            "Lưu tương ứng xuống databse là 1-hot, 2-top, 3- new, 4 - gift, 5 - best seller ... tuỳ các thánh định nghĩa")
     @Builder.Default
     private String gamePriority = "normal";
 
@@ -45,16 +45,6 @@ public class GameInputDTO {
     private String imageId;
 
     private String thumbnail;
-
-    @NonNull
-    private Long quantity;
-
-    @NonNull
-    private BigDecimal price;
-
-    private BigDecimal promotionPrice;
-
-    private BigDecimal promotionPercent;
 
     private String contentVi;
 
@@ -69,7 +59,5 @@ public class GameInputDTO {
     private String marketType;
 
     private String companyName;
-
-    private List<Long> serverGroups;
 
 }

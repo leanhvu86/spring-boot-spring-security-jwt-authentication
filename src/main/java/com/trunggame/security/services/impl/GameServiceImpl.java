@@ -3,10 +3,12 @@ package com.trunggame.security.services.impl;
 import com.trunggame.dto.BaseResponseDTO;
 import com.trunggame.dto.GameInformationDTO;
 import com.trunggame.dto.GameInputDTO;
+import com.trunggame.dto.LoadDataDTO;
 import com.trunggame.enums.ECommonStatus;
 import com.trunggame.models.*;
 import com.trunggame.repository.*;
 import com.trunggame.repository.impl.GameRepositoryCustom;
+import com.trunggame.repository.impl.PackageRepositoryImpl;
 import com.trunggame.security.services.GameService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,46 +26,55 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
-public class GameServiceImpl  implements GameService {
+public class GameServiceImpl implements GameService {
 
     @PersistenceContext
     private EntityManager entityManager;
 
     @Autowired
-    CategoryRepository categoryRepository;
+    private CategoryRepository categoryRepository;
 
     @Autowired
-    GameRepository gameRepository;
+    private GameRepository gameRepository;
 
     @Autowired
-    FileRepository fileRepository;
+    private FileRepository fileRepository;
 
     @Autowired
-    PriceRepository priceRepository;
+    private PriceRepository priceRepository;
 
     @Autowired
-    UserRepository userRepository;
+    private UserRepository userRepository;
 
     @Autowired
-    SmartTagRepository smartTagRepository;
+    private SmartTagRepository smartTagRepository;
 
     @Autowired
-    SmartTagGameRepository smartTagGameRepository;
+    private SmartTagGameRepository smartTagGameRepository;
 
     @Autowired
-    GameServerGroupRepository gameServerGroupRepository;
+    private GameServerGroupRepository gameServerGroupRepository;
 
     @Autowired
-    GameRepositoryCustom gameRepositoryCustom;
+    private GameRepositoryCustom gameRepositoryCustom;
 
     @Autowired
-    PackageRepository gamePackageRepository;
+    private PackageRepository gamePackageRepository;
 
     @Autowired
-    CompanyRepository companyRepository;
+    private CompanyRepository companyRepository;
 
     @Autowired
-    MarketTypeRepository marketTypeRepository;
+    private MarketTypeRepository marketTypeRepository;
+
+    @Autowired
+    private BannerRepository bannerRepository;
+
+    @Autowired
+    private PostRepository postRepository;
+
+    @Autowired
+    private PackageRepositoryImpl packageRepositoryCustom;
 
     @Override
     @Transactional
@@ -93,6 +104,7 @@ public class GameServiceImpl  implements GameService {
                 .descriptionEn(input.getDescriptionEn())
                 .marketType(input.getMarketType())
                 .youtubeLink(input.getYoutubeLink())
+                .gamePriority(input.getGamePriority())
                 .createdAt(LocalDateTime.now())
                 .updatedAt(LocalDateTime.now())
                 .build();
@@ -102,17 +114,17 @@ public class GameServiceImpl  implements GameService {
         file.get().setOwnerId(game.getId());
         fileRepository.save(file.get());
 
-        // Create price builder
-        var price = Price.builder()
-                .price(input.getPrice())
-                .promotionPrice(input.getPromotionPrice())
-                .promotionPercent(input.getPromotionPercent())
-                .status(ECommonStatus.ACTIVE)
-                .gameId(gameEntity.getId())
-                .createdAt(LocalDateTime.now())
-                .updatedAt(LocalDateTime.now()).build();
-
-        priceRepository.save(price);
+//        // Create price builder
+//        var price = Price.builder()
+//                .price(input.getPrice())
+//                .promotionPrice(input.getPromotionPrice())
+//                .promotionPercent(input.getPromotionPercent())
+//                .status(ECommonStatus.ACTIVE)
+//                .gameId(gameEntity.getId())
+//                .createdAt(LocalDateTime.now())
+//                .updatedAt(LocalDateTime.now()).build();
+//
+//        priceRepository.save(price);
 
         // Create company builder
         var company = Company.builder()
@@ -128,18 +140,18 @@ public class GameServiceImpl  implements GameService {
 
 
         // save tags and game
-        if(input.getTags() != null && !input.getTags().isEmpty()) {
+        if (input.getTags() != null && !input.getTags().isEmpty()) {
             var tags = input.getTags();
-            if(tags.size() > 10) {
-                return new BaseResponseDTO<>("Tag's size is must be smaller than equal 10", 400, 400,null);
+            if (tags.size() > 10) {
+                return new BaseResponseDTO<>("Tag's size is must be smaller than equal 10", 400, 400, null);
             }
             List<SmartTagGame> smartTagGames = new ArrayList<>();
-            for(var tagName : input.getTags()) {
+            for (var tagName : input.getTags()) {
                 var tag = smartTagRepository.findFirstByName(tagName);
-                if(tag.isPresent()) {
+                if (tag.isPresent()) {
                     smartTagGames.add(SmartTagGame.builder().smartTagId(tag.get().getId()).gameId(gameEntity.getId()).build());
                 } else {
-                    return new BaseResponseDTO<>("Tag's name does not exist: " + tagName, 400, 400,null);
+                    return new BaseResponseDTO<>("Tag's name does not exist: " + tagName, 400, 400, null);
                 }
             }
 
@@ -147,25 +159,24 @@ public class GameServiceImpl  implements GameService {
             smartTagGameRepository.saveAll(smartTagGames);
 
 
-
         }
 
-        return new BaseResponseDTO<>("Success", 200, 200,gameEntity);
+        return new BaseResponseDTO<>("Success", 200, 200, gameEntity);
 
     }
 
     @Override
     @Transactional
     public BaseResponseDTO<?> updateGame(GameInputDTO input) {
-        if(input.getId() == null) {
-            return new BaseResponseDTO<>("Id can not be null", 400, 400,null);
+        if (input.getId() == null) {
+            return new BaseResponseDTO<>("Id can not be null", 400, 400, null);
         }
 
         var gameEntity = gameRepository.findById(input.getId());
-        if(gameEntity.isPresent()) {
+        if (gameEntity.isPresent()) {
             validateInput(input);
 
-            if(!Objects.equals(gameEntity.get().getImageId(), input.getImageId()) || !Objects.equals(gameEntity.get().getThumbnail(), input.getThumbnail())){
+            if (!Objects.equals(gameEntity.get().getImageId(), input.getImageId()) || !Objects.equals(gameEntity.get().getThumbnail(), input.getThumbnail())) {
                 // Delete old files
                 List<String> uniqIds = Arrays.asList(gameEntity.get().getImageId(), gameEntity.get().getThumbnail());
                 fileRepository.updateFileLinkToGame(uniqIds);
@@ -173,7 +184,6 @@ public class GameServiceImpl  implements GameService {
 
             // Delete all tags
             var smartTagGameOpt = smartTagGameRepository.findByGameId(input.getId());
-            System.out.println("1312312");
             smartTagGameRepository.deleteAllById(smartTagGameOpt.get().stream().map(s -> s.getId()).collect(Collectors.toList()));
 
 
@@ -199,32 +209,32 @@ public class GameServiceImpl  implements GameService {
             file.get().setOwnerId(gameUpdate.getId());
             fileRepository.save(file.get());
 
-            // Create price builder
-            var price = Price.builder()
-                    .price(input.getPrice())
-                    .promotionPrice(input.getPromotionPrice())
-                    .promotionPercent(input.getPromotionPercent())
-                    .status(ECommonStatus.ACTIVE)
-                    .gameId(gameSaved.getId())
-                    .createdAt(LocalDateTime.now())
-                    .updatedAt(LocalDateTime.now()).build();
-
-            priceRepository.save(price);
+//            // Create price builder
+//            var price = Price.builder()
+//                    .price(input.getPrice())
+//                    .promotionPrice(input.getPromotionPrice())
+//                    .promotionPercent(input.getPromotionPercent())
+//                    .status(ECommonStatus.ACTIVE)
+//                    .gameId(gameSaved.getId())
+//                    .createdAt(LocalDateTime.now())
+//                    .updatedAt(LocalDateTime.now()).build();
+//
+//            priceRepository.save(price);
 
 
             // save tags and game
-            if(input.getTags() != null && !input.getTags().isEmpty()) {
+            if (input.getTags() != null && !input.getTags().isEmpty()) {
                 var tags = input.getTags();
-                if(tags.size() > 10) {
-                    return new BaseResponseDTO<>("Tag's size is must be smaller than equal 10", 400, 400,null);
+                if (tags.size() > 10) {
+                    return new BaseResponseDTO<>("Tag's size is must be smaller than equal 10", 400, 400, null);
                 }
                 List<SmartTagGame> smartTagGames = new ArrayList<>();
-                for(var tagName : input.getTags()) {
+                for (var tagName : input.getTags()) {
                     var tag = smartTagRepository.findFirstByName(tagName);
-                    if(tag.isPresent()) {
+                    if (tag.isPresent()) {
                         smartTagGames.add(SmartTagGame.builder().smartTagId(tag.get().getId()).gameId(gameSaved.getId()).build());
                     } else {
-                        return new BaseResponseDTO<>("Tag's name does not exist: " + tagName, 400, 400,null);
+                        return new BaseResponseDTO<>("Tag's name does not exist: " + tagName, 400, 400, null);
                     }
                 }
 
@@ -232,29 +242,29 @@ public class GameServiceImpl  implements GameService {
                 smartTagGameRepository.saveAll(smartTagGames);
             }
 
-            // update server group
-            if(input.getServerGroups() != null) {
-                if(input.getServerGroups().size() > 0) {
-                    // find all old server game group
-                    var odlGameServerGroup = gameServerGroupRepository.findAllByGameId(gameSaved.getId());
-                    gameServerGroupRepository.deleteAll(odlGameServerGroup);
+//            // update server group
+//            if (input.getServerGroups() != null) {
+//                if (input.getServerGroups().size() > 0) {
+//                    // find all old server game group
+//                    var odlGameServerGroup = gameServerGroupRepository.findAllByGameId(gameSaved.getId());
+//                    gameServerGroupRepository.deleteAll(odlGameServerGroup);
+//
+//
+//                }
+//            }
 
 
-                }
-            }
-
-
-            return new BaseResponseDTO<>("Success", 200, 200,gameSaved);
+            return new BaseResponseDTO<>("Success", 200, 200, gameSaved);
 
         }
-        return new BaseResponseDTO<>("Game not found", 400, 400,null);
+        return new BaseResponseDTO<>("Game not found", 400, 400, null);
     }
 
     @Override
     public List<GameInformationDTO> getListGame() {
         var games = gameRepositoryCustom.getAllInformation();
-        for(var game : games) {
-            var gamePackages =  gamePackageRepository.findAllByGameId(game.getId());
+        for (var game : games) {
+            var gamePackages = gamePackageRepository.findAllByGameId(game.getId());
             game.setGamePackages(gamePackages);
 
             var gameServerGroups = gameServerGroupRepository.findAllByGameId(game.getId());
@@ -270,14 +280,29 @@ public class GameServiceImpl  implements GameService {
         return games;
     }
 
-    public Query createFindGameTemp(String search, Pageable pageable){
+    @Override
+    public LoadDataDTO getLoadData() {
+
+        var loadDataDTO = LoadDataDTO.builder()
+                .listGame(this.getListGame())
+                .newGames(this.gameRepositoryCustom.getNewGamge())
+                .banners(this.bannerRepository.findBannerByStatus(Banner.Status.ACTIVE))
+                .posts(postRepository.findAll())
+                .newPackage(packageRepositoryCustom.getNewPackage())
+                .topSale(packageRepositoryCustom.getTopSale())
+                .bestSale(packageRepositoryCustom.getBestSale())
+                .build();
+        return loadDataDTO;
+    }
+
+    public Query createFindGameTemp(String search, Pageable pageable) {
         Map<String, Object> param = new HashMap<>();
         StringBuilder builder = new StringBuilder();
         builder.append(" select * from game g where 1 = 1 ");
-        if(StringUtils.isNotBlank(search)) {
+        if (StringUtils.isNotBlank(search)) {
             String lowerSearch = search.trim().toLowerCase();
             builder.append(" and (lower(g.name) like :search ");
-            param.put("search", "%"+lowerSearch+"%");
+            param.put("search", "%" + lowerSearch + "%");
         }
 
         builder.append("LIMIT :limit OFFSET :offset ");
@@ -291,19 +316,19 @@ public class GameServiceImpl  implements GameService {
         return query;
     }
 
-    private void validateInput(GameInputDTO input){
-        if(Objects.isNull(input)) {
+    private void validateInput(GameInputDTO input) {
+        if (Objects.isNull(input)) {
             throw new RuntimeException("Input to create game is null");
         }
 
         var categoryOPT = categoryRepository.findById(input.getCategoryId());
-        if(categoryOPT.isEmpty()) {
+        if (categoryOPT.isEmpty()) {
             throw new RuntimeException("Category does exist");
         }
 
         var imageOTP = fileRepository.findFirstByUniqId(input.getImageId());
 
-        if(imageOTP.isEmpty()) {
+        if (imageOTP.isEmpty()) {
             throw new RuntimeException("Image's id  does exist");
         }
     }
