@@ -36,18 +36,12 @@ public class GameRepositoryCustom {
                         "       gc.name AS categoryName," +
                         "       s.content_vi AS contentVi," +
                         "       s.description_en AS descriptionEn," +
-                        "       s.game_priority AS gamePriority," +
-                        "       tmp.tags " +
+                        "       s.game_priority AS gamePriority" +
                         "       FROM game AS s" +
-                        "         LEFT JOIN file AS f ON f.uniq_id = s.thumbnail" +
-                        "         JOIN game_categories AS gc ON gc.id = s.category_id" +
-                        "         LEFT JOIN price AS p ON p.game_id = s.id" +
-                        "         LEFT JOIN (" +
-                        "    SELECT stg.game_id, GROUP_CONCAT(CONCAT(st.name, '-', st.color) SEPARATOR ';') AS tags" +
-                        "    FROM smart_tag st" +
-                        "             JOIN smart_tag_game stg ON st.id = stg.tag_id" +
-                        "    GROUP BY stg.game_id" +
-                        ") AS tmp ON tmp.game_id = s.id where gc.status = 'ACTIVE' ";
+                        "           LEFT JOIN file AS f ON f.uniq_id = s.thumbnail" +
+                        "           JOIN game_categories AS gc ON gc.id = s.category_id" +
+                        "           LEFT JOIN price AS p ON p.game_id = s.id" +
+                        "       where gc.status = 'ACTIVE' ";
 
         System.out.println(sql);
 
@@ -96,17 +90,12 @@ public class GameRepositoryCustom {
                         "       gc.name AS categoryName," +
                         "       s.content_vi AS contentVi," +
                         "       s.description_en AS descriptionEn," +
-                        "       tmp.tags ,gc.created_at " +
+                        "       gc.created_at " +
                         "       FROM game AS s" +
-                        "         LEFT JOIN file AS f ON f.uniq_id = s.thumbnail" +
-                        "         JOIN game_categories AS gc ON gc.id = s.category_id" +
-                        "         LEFT JOIN price AS p ON p.game_id = s.id" +
-                        "         LEFT JOIN (" +
-                        "    SELECT stg.game_id, GROUP_CONCAT(CONCAT(st.name, '-', st.color) SEPARATOR ';') AS tags" +
-                        "    FROM smart_tag st" +
-                        "             JOIN smart_tag_game stg ON st.id = stg.tag_id" +
-                        "    GROUP BY stg.game_id" +
-                        ") AS tmp ON tmp.game_id = s.id where gc.status = 'ACTIVE' " +
+                        "           LEFT JOIN file AS f ON f.uniq_id = s.thumbnail " +
+                        "           JOIN game_categories AS gc ON gc.id = s.category_id" +
+                        "           LEFT JOIN price AS p ON p.game_id = s.id" +
+                       "        where s.status = 'ACTIVE' " +
                         "and s.game_priority ='3'";
 
         System.out.println(sql);
