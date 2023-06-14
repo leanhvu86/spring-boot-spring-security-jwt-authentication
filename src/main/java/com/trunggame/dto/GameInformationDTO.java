@@ -1,6 +1,5 @@
 package com.trunggame.dto;
 
-import com.trunggame.models.GamePackage;
 import com.trunggame.models.GameServerGroup;
 import lombok.Builder;
 import lombok.Data;
@@ -36,7 +35,7 @@ public class GameInformationDTO {
     private String descriptionEn;
     private String gamePriority;
     private List<String> tags;
-    private List<GamePackage> gamePackages;
+    private List<GamePackageDTO> gamePackages;
     private List<GameServerGroup> server;
 
 }

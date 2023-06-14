@@ -35,6 +35,9 @@ public class PackageRepositoryImpl {
                 .previewUrl(rs.getString("preview_url"))
                 .status(rs.getString("status"))
                 .topSale(rs.getString("top_sale"))
+                .descriptionEn(rs.getString("description_en"))
+                .descriptionVi(rs.getString("description_vi"))
+                .gameId(rs.getLong("game_id"))
                 .build());
     }
 
@@ -58,6 +61,29 @@ public class PackageRepositoryImpl {
                 .previewUrl(rs.getString("preview_url"))
                 .build());
     }
+    public List<GamePackageDTO> getPackageByGameId(Long gameId) {
+
+        String sql = "SELECT   gp.id ,gp.description_vi,gp.description_en ,gp.attribute ,gp.game_id ,gp.name ,gp.price ,gp.rating ,gp.warehouse_quantity ,gp.unit ,gp.trade_count, f.preview_url  from game_package gp \n" +
+                "\tjoin file f on f.uniq_id  =gp.image_id where gp.top_sale = 'ACTIVE' and gp.game_id = "+gameId;
+
+        System.out.println(sql);
+
+        return jdbcTemplate.query(sql, (rs, rowNum) -> GamePackageDTO.
+                builder()
+                .id(rs.getLong("id"))
+                .name(rs.getString("name"))
+                .price(rs.getLong("price"))
+                .unit(rs.getString("unit"))
+                .warehouseQuantity(rs.getInt("warehouse_quantity"))
+                .tradeCount(rs.getInt("trade_count"))
+                .rating(rs.getLong("rating"))
+                .attribute(rs.getString("attribute"))
+                .previewUrl(rs.getString("preview_url"))
+                .descriptionEn(rs.getString("description_en"))
+                .descriptionVi(rs.getString("description_vi"))
+                .gameId(rs.getLong("game_id"))
+                .build());
+    }
     public List<GamePackageDTO> getNewPackage() {
 
         String sql = "SELECT   gp.id ,gp.description_vi,gp.description_en ,gp.attribute ,gp.game_id ,gp.name ,gp.price ,gp.rating ,gp.warehouse_quantity ,gp.unit ,gp.trade_count, f.preview_url  from game_package gp \n" +
@@ -76,6 +102,9 @@ public class PackageRepositoryImpl {
                 .rating(rs.getLong("rating"))
                 .attribute(rs.getString("attribute"))
                 .previewUrl(rs.getString("preview_url"))
+                .descriptionEn(rs.getString("description_en"))
+                .descriptionVi(rs.getString("description_vi"))
+                .gameId(rs.getLong("game_id"))
                 .build());
     }
 
@@ -97,6 +126,9 @@ public class PackageRepositoryImpl {
                 .rating(rs.getLong("rating"))
                 .attribute(rs.getString("attribute"))
                 .previewUrl(rs.getString("preview_url"))
+                .descriptionEn(rs.getString("description_en"))
+                .descriptionVi(rs.getString("description_vi"))
+                .gameId(rs.getLong("game_id"))
                 .build());
     }
 }

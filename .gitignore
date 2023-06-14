@@ -4,3 +4,6 @@ target/
 *.class
 *.war
 *.png
+image/
+*.webp
+*.iml

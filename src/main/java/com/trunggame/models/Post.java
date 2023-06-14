@@ -23,7 +23,7 @@ public class Post {
     @Column(name = "title",length = 10000, columnDefinition = "TEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci")
     private String title;
 
-    @Column(name = "contentEN")
+    @Column(name = "contentEN",length = 10000, columnDefinition = "TEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci")
     private String contentEN;
 
     @Column(name = "contentVI",length = 10000, columnDefinition = "TEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci")

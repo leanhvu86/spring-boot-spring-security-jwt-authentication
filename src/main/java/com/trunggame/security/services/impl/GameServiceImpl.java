@@ -1,9 +1,6 @@
 package com.trunggame.security.services.impl;
 
-import com.trunggame.dto.BaseResponseDTO;
-import com.trunggame.dto.GameInformationDTO;
-import com.trunggame.dto.GameInputDTO;
-import com.trunggame.dto.LoadDataDTO;
+import com.trunggame.dto.*;
 import com.trunggame.enums.ECommonStatus;
 import com.trunggame.models.*;
 import com.trunggame.repository.*;
@@ -264,9 +261,13 @@ public class GameServiceImpl implements GameService {
     public List<GameInformationDTO> getListGame() {
         var games = gameRepositoryCustom.getAllInformation();
         for (var game : games) {
-            var gamePackages = gamePackageRepository.findAllByGameId(game.getId());
-            game.setGamePackages(gamePackages);
-
+//            var gamePackages = gamePackageRepository.findAllByGameId(game.getId());
+//            game.setGamePackages(gamePackages);
+            List <GamePackageDTO> listPackage = packageRepositoryCustom.getPackageByGameId(game.getId());
+            if(listPackage.size()==0){
+                listPackage = new ArrayList<>();
+            }
+            game.setGamePackages(listPackage);
             var gameServerGroups = gameServerGroupRepository.findAllByGameId(game.getId());
             game.setServer(gameServerGroups);
 
