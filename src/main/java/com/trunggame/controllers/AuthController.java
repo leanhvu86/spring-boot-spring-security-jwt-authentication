@@ -17,6 +17,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -65,6 +66,25 @@ public class AuthController {
     @Value("${default.password}")
     private String defaultPassword;
 
+    @PostMapping("/changePassword")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
+    public BaseResponseDTO<?> changePassword(@Valid @RequestBody LoginRequestDTO changeRequest) {
+        Authentication authentication = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(changeRequest.getUsername(), changeRequest.getPassword()));
+        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
+
+        var currentUser = userRepository.findByUsername(userDetails.getUsername());
+
+        if(currentUser.isPresent()){
+            String newPassword=encoder.encode(changeRequest.getNewPassword());
+
+            var user = currentUser.get();
+            user.setPassword(newPassword);
+            userRepository.save(user);
+            return new BaseResponseDTO<>("Change Password successfully!", 200, 200, currentUser.get());
+        }else
+            return new BaseResponseDTO<>("User not found successfully!", 401, 401, null);
+    }
     @PostMapping("/signin")
     public BaseResponseDTO<JwtResponseDTO> authenticateUser(@Valid @RequestBody LoginRequestDTO loginRequest) {
 
@@ -81,7 +101,7 @@ public class AuthController {
 
         return new BaseResponseDTO<>("Success", 200, 200, new JwtResponseDTO(jwt,
                 userDetails.getId(),
-                userDetails.getUsername(),
+                userDetails.getNickname(),
                 userDetails.getEmail(),
                 roles, userDetails.getAddress(), userDetails.getFullName(), userDetails.getPhoneNumber()));
     }

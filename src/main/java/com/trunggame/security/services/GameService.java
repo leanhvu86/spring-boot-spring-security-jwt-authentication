@@ -12,8 +12,14 @@ import java.util.List;
 
 public interface GameService {
 
-     BaseResponseDTO<?> createGame(GameInputDTO input);
-     BaseResponseDTO<?> updateGame(GameInputDTO input);
-     List<GameInformationDTO>getListGame();
-     LoadDataDTO getLoadData();
+    BaseResponseDTO<?> createGame(GameInputDTO input);
+
+    BaseResponseDTO<?> updateGame(GameInputDTO input);
+
+    List<GameInformationDTO> getListGame();
+
+    LoadDataDTO getLoadData();
+
+    BaseResponseDTO<?> deleteGame(Long id);
+
 }

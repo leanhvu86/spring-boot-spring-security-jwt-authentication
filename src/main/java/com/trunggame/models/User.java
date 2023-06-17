@@ -53,9 +53,7 @@ public class User {
     @Column(length = 20)
     private EUserStatus status;
 
-    @NotBlank
-    @Size(max = 200)
-    @Column(name = "address")
+    @Column(name = "address",columnDefinition = "VARCHAR(5000) CHARACTER SET utf8")
     private String address;
 
     @ManyToMany(fetch = FetchType.LAZY)

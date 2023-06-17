@@ -296,6 +296,29 @@ public class GameServiceImpl implements GameService {
         return loadDataDTO;
     }
 
+    @Override
+    public BaseResponseDTO<?> deleteGame(Long id) {
+        var game = gameRepository.findById(id);
+        if(game.isPresent()) {
+            var gameObject = game.get();
+            gameObject.setStatus(Game.Status.INACTIVE);
+            gameRepository.save(gameObject);
+            List<GamePackageDTO> listPackage = packageRepositoryCustom.getPackageByGameId(id);
+            if(!listPackage.isEmpty()){
+                for(GamePackageDTO packageDTO: listPackage){
+                    var pack = gamePackageRepository.findById(packageDTO.getId());
+                    if(pack.isPresent()){
+                        var tempPack = pack.get();
+                        tempPack.setStatus(GamePackage.Status.INACTIVE);
+                        gamePackageRepository.save(tempPack);
+                    }
+                }
+            }
+            return new BaseResponseDTO<>("Success", 200,200,null);
+        }
+        return new BaseResponseDTO<>("No content", 400,400,null);
+    }
+
     public Query createFindGameTemp(String search, Pageable pageable) {
         Map<String, Object> param = new HashMap<>();
         StringBuilder builder = new StringBuilder();

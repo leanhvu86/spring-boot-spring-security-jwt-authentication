@@ -83,12 +83,13 @@ public class UserController {
     }
 
     @PostMapping("/update")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
     public BaseResponseDTO<?> updateUser(@RequestBody UserUpdateDTO userUpdateDTO) {
         var userOPT = userRepository.findById(userUpdateDTO.getId());
 
         if (userOPT.isPresent()) {
             var currentUser = userOPT.get();
-            currentUser.setNickname(userUpdateDTO.getNickname());
+            currentUser.setNickname(userUpdateDTO.getNickName());
             currentUser.setAddress(userUpdateDTO.getAddress());
             currentUser.setFullName(userUpdateDTO.getFullName());
             currentUser.setPhoneNumber(userUpdateDTO.getPhoneNumber());

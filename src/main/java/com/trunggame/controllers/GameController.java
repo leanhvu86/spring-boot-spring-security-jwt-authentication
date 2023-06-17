@@ -3,6 +3,7 @@ package com.trunggame.controllers;
 import com.trunggame.dto.BaseResponseDTO;
 import com.trunggame.dto.GameInputDTO;
 import com.trunggame.dto.LoadDataDTO;
+import com.trunggame.models.Game;
 import com.trunggame.repository.GameRepository;
 import com.trunggame.repository.PackageRepository;
 import com.trunggame.repository.impl.GameRepositoryCustom;
@@ -46,30 +47,25 @@ public class GameController {
 
     @GetMapping("/delete/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public BaseResponseDTO<?>  deleteGames(@PathVariable Long id) {
-        var game = gameRepository.findById(id);
-        if(game.isPresent()) {
-            gameRepository.deleteById(id);
-            return new BaseResponseDTO<>("Success", 200,200,null);
-        }
-        return new BaseResponseDTO<>("No content", 400,400,null);
+    public BaseResponseDTO<?> deleteGames(@PathVariable Long id) {
+        return gameService.deleteGame(id);
     }
 
     @GetMapping("")
     public BaseResponseDTO<?> getListGame() {
-        return new BaseResponseDTO<>("Success", 200,200,gameService.getListGame());
+        return new BaseResponseDTO<>("Success", 200, 200, gameService.getListGame());
     }
 
     @GetMapping("/load-data")
     public BaseResponseDTO<?> loadData() {
 //        String originalInput = gameService.getLoadData().toString();
 //        String data = Base64.getEncoder().encodeToString(originalInput.getBytes());
-        return new BaseResponseDTO<>("Success", 200,200,gameService.getLoadData());
+        return new BaseResponseDTO<>("Success", 200, 200, gameService.getLoadData());
     }
 
     @GetMapping("/{id}")
     public BaseResponseDTO<?> getGame(@PathVariable Long id) {
         var games = gameRepository.findById(id);
-        return new BaseResponseDTO<>("Success", 200,200,games.get());
+        return new BaseResponseDTO<>("Success", 200, 200, games.get());
     }
 }

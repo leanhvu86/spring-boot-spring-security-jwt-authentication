@@ -44,7 +44,7 @@ public class PackageRepositoryImpl {
     public List<GamePackageDTO> getTopSale() {
 
         String sql = "SELECT   gp.id ,gp.description_vi,gp.description_en ,gp.attribute ,gp.game_id ,gp.name ,gp.price ,gp.rating ,gp.warehouse_quantity ,gp.unit ,gp.trade_count, f.preview_url  from game_package gp \n" +
-                "\tjoin file f on f.uniq_id  =gp.image_id where gp.top_sale = 'ACTIVE' ";
+                "\tjoin file f on f.uniq_id  = gp.image_id join game g on g.id = gp.game_id where gp.top_sale = 'ACTIVE' and g.status = 'ACTIVE' ";
 
         System.out.println(sql);
 
@@ -63,8 +63,9 @@ public class PackageRepositoryImpl {
     }
     public List<GamePackageDTO> getPackageByGameId(Long gameId) {
 
+
         String sql = "SELECT   gp.id ,gp.description_vi,gp.description_en ,gp.attribute ,gp.game_id ,gp.name ,gp.price ,gp.rating ,gp.warehouse_quantity ,gp.unit ,gp.trade_count, f.preview_url  from game_package gp \n" +
-                "\tjoin file f on f.uniq_id  =gp.image_id where gp.top_sale = 'ACTIVE' and gp.game_id = "+gameId;
+                "\tjoin file f on f.uniq_id = gp.image_id join game g on g.id = gp.game_id where gp.status = 'ACTIVE' and g.status = 'ACTIVE' and gp.game_id = "+gameId;
 
         System.out.println(sql);
 
@@ -87,7 +88,7 @@ public class PackageRepositoryImpl {
     public List<GamePackageDTO> getNewPackage() {
 
         String sql = "SELECT   gp.id ,gp.description_vi,gp.description_en ,gp.attribute ,gp.game_id ,gp.name ,gp.price ,gp.rating ,gp.warehouse_quantity ,gp.unit ,gp.trade_count, f.preview_url  from game_package gp \n" +
-                "\tjoin file f on f.uniq_id  =gp.image_id where gp.status = 'ACTIVE' order by gp.created_at desc limit 10";
+                "\tjoin file f on f.uniq_id  =gp.image_id join game g on g.id = gp.game_id where gp.status = 'ACTIVE' and g.status = 'ACTIVE' order by gp.created_at desc limit 10";
 
         System.out.println(sql);
 
@@ -111,7 +112,7 @@ public class PackageRepositoryImpl {
     public List<GamePackageDTO> getBestSale() {
 
         String sql = "SELECT   gp.id ,gp.description_vi,gp.description_en ,gp.attribute ,gp.game_id ,gp.name ,gp.price ,gp.rating ,gp.warehouse_quantity ,gp.unit ,gp.trade_count, f.preview_url  from game_package gp\n" +
-                "           join file f on f.uniq_id  =gp.image_id order by gp.trade_count desc limit 3";
+                "           join file f on f.uniq_id  =gp.image_id join game g on g.id = gp.game_id where gp.status = 'ACTIVE' and g.status = 'ACTIVE'  order by gp.trade_count desc limit 3";
 
         System.out.println(sql);
 

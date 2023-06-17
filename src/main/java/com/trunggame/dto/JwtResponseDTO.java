@@ -18,18 +18,18 @@ public class JwtResponseDTO {
   private String token;
   private String type = "Bearer";
   private Long id;
-  private String username;
   private String email;
   private String fullName;
+  private String nickName;
   private String address;
   private String phoneNumber;
   private List<String> roles;
 
-  public JwtResponseDTO(String accessToken, Long id, String username, String email, List<String> roles, String address
+  public JwtResponseDTO(String accessToken, Long id, String nickName, String email, List<String> roles, String address
   , String fullName, String phoneNumber) {
     this.token = accessToken;
     this.id = id;
-    this.username = username;
+    this.nickName = nickName;
     this.email = email;
     this.roles = roles;
     this.address = address;
