@@ -15,6 +15,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -48,27 +49,30 @@ public class GameOrderServiceImpl implements GameOrderService {
     UserRepository userRepository;
 
     @Override
-    public BaseResponseDTO<?>  createOrder(OrderInfoDTO orderInfoDTO) {
+    public BaseResponseDTO<?> createOrder(OrderInfoDTO orderInfoDTO) {
 
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication()
                 .getPrincipal();
         var currentUser = userRepository.findByUsername(userDetails.getUsername());
 
-        if(currentUser.isEmpty()) {
-            return new BaseResponseDTO<>("User does not exist", 400, 400,null);
+        if (currentUser.isEmpty()) {
+            return new BaseResponseDTO<>("User does not exist", 400, 400, null);
         }
 
         String uuID = UUID.randomUUID().toString();
         var gameOrder = GameOrder.builder()
                 .customerId(currentUser.get().getId())
                 .createdAt(LocalDateTime.now())
-                .code("TRUNGGAME - " +  uuID)
-                .status("1")// 1 - cho xu ly, 2 - dang xu ly, 3 - thanh cong , 4 - that bai, 5  - deleted
+                .customerName(currentUser.get().getUsername())
+                .code("TRUNGGAME - " + uuID)
+                .status("1") // 1 - cho xu ly, 2 - dang xu ly, 3 - thanh cong , 4 - Huỷ
                 .build();
-        var gameOrderEntity  =  gameOrderRepository.save(gameOrder);
+        var gameOrderEntity = gameOrderRepository.save(gameOrder);
 
         List<GameOrderDetail> gameOrderDetails = new ArrayList<>();
-        for(var item : orderInfoDTO.getItems()) {
+        BigDecimal sum = new BigDecimal("0");
+        for (var item : orderInfoDTO.getItems()) {
+            sum = sum.add(item.getAmount());
             var gameOrderDetail = GameOrderDetail.builder()
                     .account(item.getAccount())
                     .gameOrderId(gameOrder.getId())
@@ -77,7 +81,6 @@ public class GameOrderServiceImpl implements GameOrderService {
                     .loginCode(item.getLoginCode())
                     .loginType(item.getLoginType())
                     .password(item.getPassword())
-                    .account(item.getAccount())
                     .gameId(item.getGameId())
                     .amount(item.getAmount())
                     .quantity(item.getQuantity())
@@ -88,20 +91,22 @@ public class GameOrderServiceImpl implements GameOrderService {
             gameOrderDetails.add(gameOrderDetail);
         }
         gameOrderDetailRepository.saveAll(gameOrderDetails);
-        return new BaseResponseDTO<>("Success", 200, 200,gameOrderEntity);
+        gameOrderEntity.setTotalAmount(sum);
+        gameOrderRepository.save(gameOrderEntity);
+        return new BaseResponseDTO<>("Success", 200, 200, gameOrderEntity);
     }
 
     @Override
     public GameOrder updateOrder(Long id, OrderInfoDTO orderInfoDTO) {
         var gameOrder = gameOrderRepository.findById(id);
-        if(gameOrder.isPresent()) {
+        if (gameOrder.isPresent()) {
 
             // delete all old order detail
             gameOrderDetailRepository.deleteAllByGameOrderId(gameOrder.get().getId());
 
             // create new game order detail
             List<GameOrderDetail> gameOrderDetails = new ArrayList<>();
-            for(var item : orderInfoDTO.getItems()) {
+            for (var item : orderInfoDTO.getItems()) {
                 var gameOrderDetail = GameOrderDetail.builder()
                         .account(item.getAccount())
                         .gameOrderId(gameOrder.get().getId())
@@ -131,19 +136,19 @@ public class GameOrderServiceImpl implements GameOrderService {
         var orderDTO = new OrderDTO();
         var orderDetails = new ArrayList<OrderInfoDetailDTO>();
         var gameOrder = gameOrderRepository.findById(id);
-        if(gameOrder.isPresent()) {
+        if (gameOrder.isPresent()) {
             var gameOrderDetails = gameOrderDetailRepository.findAllByGameOrderId(gameOrder.get().getId());
-            if(gameOrderDetails.isEmpty()) {
+            if (gameOrderDetails.isEmpty()) {
                 return null;
             }
 
-            for(var orderDetailEntity : gameOrderDetails) {
+            for (var orderDetailEntity : gameOrderDetails) {
                 var orderDetail = new OrderInfoDetailDTO();
                 var game = gameRepository.findById(Long.parseLong(orderDetailEntity.getGameId().toString()));
                 var serverGameGroup = gameServerGroupRepository.findAllByGameId(game.get().getId());
                 var category = categoryRepository.findById(game.get().getCategoryId());
-                var pack  = packageRepository.findById(orderDetailEntity.getPackageId());
-                            orderDetail.setId(gameOrder.get().getId());
+                var pack = packageRepository.findById(orderDetailEntity.getPackageId());
+                orderDetail.setId(gameOrder.get().getId());
                 orderDetail.setGameId(game.get().getId());
                 orderDetail.setGamePackage(pack.get());
                 orderDetail.setLoginCode(orderDetailEntity.getLoginCode());
@@ -172,8 +177,8 @@ public class GameOrderServiceImpl implements GameOrderService {
     @Override
     public void deleteOrder(Long id) {
         var gameOrder = gameOrderRepository.findById(id);
-        if(gameOrder.isPresent()) {
-            gameOrder.get().setStatus("5");
+        if (gameOrder.isPresent()) {
+            gameOrder.get().setStatus("4");
             gameOrderRepository.save(gameOrder.get());
         }
     }
@@ -199,7 +204,7 @@ public class GameOrderServiceImpl implements GameOrderService {
     @Override
     public void updateOrderStatus(GetOrderDTO getOrderDTO) {
         var order = gameOrderRepository.findById(getOrderDTO.getOrderId());
-        if(order.isPresent()) {
+        if (order.isPresent()) {
             order.get().setStatus(getOrderDTO.getStatus());
             gameOrderRepository.save(order.get());
         }

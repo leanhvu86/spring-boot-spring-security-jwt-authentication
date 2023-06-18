@@ -1,20 +1,19 @@
 package com.trunggame.models;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-@Data
-@Builder
-@AllArgsConstructor
-@NoArgsConstructor
 @Entity
 @Table(name = "`game_order`")
+@Data
+@Builder
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class GameOrder {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -29,9 +28,12 @@ public class GameOrder {
     @Column(name = "code")
     private String code;
 
-    @Column(name = "status")
-    private String status;
+    @Column(name = "customer_name")
+    private String customerName;
 
+    @Column(name = "status")
+    private String status = "1";
+    // 1 - cho xu ly, 2 - dang xu ly, 3 - thanh cong , 4 - Huỷ
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt = LocalDateTime.now();
 
