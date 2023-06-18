@@ -1,9 +1,11 @@
 package com.trunggame.security.services.impl;
 
 import com.trunggame.dto.*;
+import com.trunggame.enums.EUserStatus;
 import com.trunggame.models.GameOrder;
 import com.trunggame.models.GameOrderDetail;
 import com.trunggame.repository.*;
+import com.trunggame.repository.impl.OrderRepositoryCustom;
 import com.trunggame.security.services.GameOrderService;
 import org.aspectj.weaver.ast.Or;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,11 +16,13 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -48,7 +52,11 @@ public class GameOrderServiceImpl implements GameOrderService {
     @Autowired
     UserRepository userRepository;
 
+    @Autowired
+    OrderRepositoryCustom orderRepositoryCustom;
+
     @Override
+    @Transactional
     public BaseResponseDTO<?> createOrder(OrderInfoDTO orderInfoDTO) {
 
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication()
@@ -97,6 +105,7 @@ public class GameOrderServiceImpl implements GameOrderService {
     }
 
     @Override
+    @Transactional
     public GameOrder updateOrder(Long id, OrderInfoDTO orderInfoDTO) {
         var gameOrder = gameOrderRepository.findById(id);
         if (gameOrder.isPresent()) {
@@ -133,7 +142,6 @@ public class GameOrderServiceImpl implements GameOrderService {
 
     @Override
     public OrderDTO detailById(Long id) {
-        var orderDTO = new OrderDTO();
         var orderDetails = new ArrayList<OrderInfoDetailDTO>();
         var gameOrder = gameOrderRepository.findById(id);
         if (gameOrder.isPresent()) {
@@ -154,22 +162,46 @@ public class GameOrderServiceImpl implements GameOrderService {
                 orderDetail.setLoginCode(orderDetailEntity.getLoginCode());
                 orderDetail.setLoginType(orderDetailEntity.getLoginType());
                 orderDetail.setQuantity(orderDetailEntity.getQuantity());
-                orderDetail.setAmount(orderDetail.getAmount());
+                orderDetail.setAmount(orderDetailEntity.getAmount());
+                orderDetail.setPrice(orderDetailEntity.getPrice());
                 orderDetail.setCharacterName(orderDetailEntity.getCharacterName());
                 orderDetail.setPassword(orderDetailEntity.getPassword());
                 orderDetail.setGame(game.get());
                 orderDetail.setAccount(orderDetailEntity.getAccount());
                 orderDetail.setServer(orderDetailEntity.getServerName());
+                orderDetail.setStatus(orderDetailEntity.getStatus());
                 orderDetail.setServer(orderDetailEntity.getServerName());
                 orderDetail.setGameCategories(category.get());
                 orderDetails.add(orderDetail);
 
             }
+            var user = userRepository.findById(gameOrder.get().getCustomerId());
+            String phone = "";
+            String email = "";
+            String name = "";
+            EUserStatus userStatus=null;
+            if (user.isPresent()) {
+                phone = user.get().getPhoneNumber();
+                email = user.get().getEmail();
+                name= user.get().getFullName();
+                userStatus= user.get().getStatus();
+            }
+            List<OrderDTO> userTradeInfo = orderRepositoryCustom.getCustomerTradeInfo(gameOrder.get().getCustomerId());
 
-            orderDTO.setId(gameOrder.get().getId());
-            orderDTO.setCode(gameOrder.get().getCode());
-            orderDTO.setOrderDetailList(orderDetails);
-            return orderDTO;
+            return OrderDTO.builder()
+                    .id(gameOrder.get().getId())
+                    .code(gameOrder.get().getCode())
+                    .orderDetailList(orderDetails)
+                    .customerName(name)
+                    .createdAt(gameOrder.get().getCreatedAt())
+                    .phoneNumber(phone)
+                    .email(email)
+                    .status(gameOrder.get().getStatus())
+                    .tradeCount(userTradeInfo.get(0).getTradeCount())
+                    .totalAmount(gameOrder.get().getTotalAmount())
+                    .totalAmountTrade(userTradeInfo.get(0).getTotalAmountTrade())
+                    .userStatus(userStatus)
+                    .build();
         }
         return null;
     }
