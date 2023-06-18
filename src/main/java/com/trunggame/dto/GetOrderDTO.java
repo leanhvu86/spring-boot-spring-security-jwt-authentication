@@ -5,6 +5,8 @@ import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.math.BigDecimal;
+
 @Data
 @Builder
 @Getter
@@ -20,5 +22,5 @@ public class GetOrderDTO {
     private String pageNumber;
     private Long orderId;
     private String status;
-
+    private BigDecimal totalAmount;
 }

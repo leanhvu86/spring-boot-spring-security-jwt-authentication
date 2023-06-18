@@ -238,6 +238,7 @@ public class GameOrderServiceImpl implements GameOrderService {
         var order = gameOrderRepository.findById(getOrderDTO.getOrderId());
         if (order.isPresent()) {
             order.get().setStatus(getOrderDTO.getStatus());
+            order.get().setTotalAmount(getOrderDTO.getTotalAmount());
             gameOrderRepository.save(order.get());
         }
     }
