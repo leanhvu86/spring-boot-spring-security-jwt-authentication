@@ -2,6 +2,7 @@ package com.trunggame.dto;
 
 
 import com.fasterxml.jackson.annotation.JsonPropertyDescription;
+import com.trunggame.models.Game;
 import com.trunggame.models.SmartTag;
 import lombok.Builder;
 import lombok.Data;
@@ -24,13 +25,10 @@ public class GameInputDTO {
 
     private Long id;
 
-    @NonNull
     private String name;
 
-    @NonNull
     private String description;
 
-    @NonNull
     @JsonPropertyDescription("Các loại game khác nhau sẽ yêu cầu require các trường khác nhau")
     private String type;
 
@@ -39,7 +37,6 @@ public class GameInputDTO {
     @Builder.Default
     private String gamePriority = "normal";
 
-    @NonNull
     private Long categoryId;
 
     private String imageId;
@@ -59,5 +56,7 @@ public class GameInputDTO {
     private String marketType;
 
     private String companyName;
+
+    private Game.Status status;
 
 }

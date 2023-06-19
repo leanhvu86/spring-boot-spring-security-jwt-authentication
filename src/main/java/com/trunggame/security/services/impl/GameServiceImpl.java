@@ -200,6 +200,7 @@ public class GameServiceImpl implements GameService {
             gameEntity.get().setGamePriority(input.getGamePriority());
             gameEntity.get().setYoutubeLink(input.getYoutubeLink());
             gameEntity.get().setDescriptionEn(input.getDescriptionEn());
+            gameEntity.get().setStatus(input.getStatus());
             var gameSaved = gameRepository.saveAndFlush(gameEntity.get());
             gameSaved.setPreviewUrl(file.get().getPreviewUrl());
 
@@ -284,36 +285,35 @@ public class GameServiceImpl implements GameService {
     @Override
     public LoadDataDTO getLoadData() {
 
-        var loadDataDTO = LoadDataDTO.builder()
-                .listGame(this.getListGame())
+        var games = this.gameRepositoryCustom.getActiveGame();
+        for (var game : games) {
+            List <GamePackageDTO> listPackage = packageRepositoryCustom.getPackageByGameId(game.getId());
+            if(listPackage.size()==0){
+                listPackage = new ArrayList<>();
+            }
+            game.setGamePackages(listPackage);
+            var gameServerGroups = gameServerGroupRepository.findAllByGameId(game.getId());
+            game.setServer(gameServerGroups);
+        }
+
+        return LoadDataDTO.builder()
+                .listGame(games)
                 .newGames(this.gameRepositoryCustom.getNewGamge())
                 .banners(this.bannerRepository.findBannerByStatus(Banner.Status.ACTIVE))
-                .posts(postRepository.findAll())
+                .posts(postRepository.findByStatus(Post.Status.ACTIVE))
                 .newPackage(packageRepositoryCustom.getNewPackage())
                 .topSale(packageRepositoryCustom.getTopSale())
                 .bestSale(packageRepositoryCustom.getBestSale())
                 .build();
-        return loadDataDTO;
     }
 
     @Override
-    public BaseResponseDTO<?> deleteGame(Long id) {
-        var game = gameRepository.findById(id);
+    public BaseResponseDTO<?> deleteGame(GameInputDTO orderDTO) {
+        var game = gameRepository.findById(orderDTO.getId());
         if(game.isPresent()) {
             var gameObject = game.get();
-            gameObject.setStatus(Game.Status.INACTIVE);
+            gameObject.setStatus(orderDTO.getStatus());
             gameRepository.save(gameObject);
-            List<GamePackageDTO> listPackage = packageRepositoryCustom.getPackageByGameId(id);
-            if(!listPackage.isEmpty()){
-                for(GamePackageDTO packageDTO: listPackage){
-                    var pack = gamePackageRepository.findById(packageDTO.getId());
-                    if(pack.isPresent()){
-                        var tempPack = pack.get();
-                        tempPack.setStatus(GamePackage.Status.INACTIVE);
-                        gamePackageRepository.save(tempPack);
-                    }
-                }
-            }
             return new BaseResponseDTO<>("Success", 200,200,null);
         }
         return new BaseResponseDTO<>("No content", 400,400,null);

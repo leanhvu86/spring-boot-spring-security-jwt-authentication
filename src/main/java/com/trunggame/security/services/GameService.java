@@ -20,6 +20,6 @@ public interface GameService {
 
     LoadDataDTO getLoadData();
 
-    BaseResponseDTO<?> deleteGame(Long id);
+    BaseResponseDTO<?> deleteGame(GameInputDTO gameInputDTO);
 
 }

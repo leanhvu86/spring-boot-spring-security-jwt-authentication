@@ -179,12 +179,12 @@ public class GameOrderServiceImpl implements GameOrderService {
             String phone = "";
             String email = "";
             String name = "";
-            EUserStatus userStatus=null;
+            EUserStatus userStatus = null;
             if (user.isPresent()) {
                 phone = user.get().getPhoneNumber();
                 email = user.get().getEmail();
-                name= user.get().getFullName();
-                userStatus= user.get().getStatus();
+                name = user.get().getFullName();
+                userStatus = user.get().getStatus();
             }
             List<OrderDTO> userTradeInfo = orderRepositoryCustom.getCustomerTradeInfo(gameOrder.get().getCustomerId());
 
@@ -216,6 +216,15 @@ public class GameOrderServiceImpl implements GameOrderService {
     }
 
     @Override
+    public List<GameOrder> getCheckOrder() {
+
+        var orderList = gameOrderRepository.findByStatus("1");
+        if (!orderList.isEmpty())
+            return orderList;
+        return null;
+    }
+
+    @Override
     public List<GameOrder> getAllOrders(GetOrderDTO getOrderDTO) {
         String orderCode = getOrderDTO.getOrderCode();
         String orderBy = getOrderDTO.getOrderBy();
@@ -234,12 +243,48 @@ public class GameOrderServiceImpl implements GameOrderService {
     }
 
     @Override
+    @Transactional
     public void updateOrderStatus(GetOrderDTO getOrderDTO) {
         var order = gameOrderRepository.findById(getOrderDTO.getOrderId());
         if (order.isPresent()) {
+            if (Objects.equals(getOrderDTO.getStatus(), "4")) {
+                List<GameOrderDetail> listDetail = gameOrderDetailRepository.findAllByGameOrderId(order.get().getId());
+                if (listDetail.size() > 0) {
+                    listDetail.forEach(detail -> {
+                        var orderDetail = gameOrderDetailRepository.findById(detail.getId());
+
+                        if (orderDetail.isPresent()) {
+                            orderDetail.get().setStatus("2");
+                            gameOrderDetailRepository.save(orderDetail.get());
+                        }
+                    });
+                }
+            }
             order.get().setStatus(getOrderDTO.getStatus());
             order.get().setTotalAmount(getOrderDTO.getTotalAmount());
             gameOrderRepository.save(order.get());
         }
+    }
+
+    @Override
+    public OrderInfoDetailDTO updateOrderDetailStatus(OrderInfoDetailDTO orderInfoDetailDTO) {
+        var orderDetail = gameOrderDetailRepository.findById(orderInfoDetailDTO.getId());
+
+        if (orderDetail.isPresent()) {
+            var detail = orderDetail.get();
+            detail.setAccount(orderInfoDetailDTO.getAccount());
+            detail.setStatus(orderInfoDetailDTO.getStatus());
+            detail.setLoginCode(orderInfoDetailDTO.getLoginCode());
+            detail.setLoginType(orderInfoDetailDTO.getLoginType());
+            detail.setCharacterName(orderInfoDetailDTO.getCharacterName());
+            detail.setPrice(orderInfoDetailDTO.getPrice());
+            detail.setQuantity(orderInfoDetailDTO.getQuantity());
+            detail.setAmount(orderInfoDetailDTO.getAmount());
+            detail.setPassword(orderInfoDetailDTO.getPassword());
+            detail.setServerName(orderInfoDetailDTO.getServer());
+            gameOrderDetailRepository.save(detail);
+            return orderInfoDetailDTO;
+        }
+        return null;
     }
 }

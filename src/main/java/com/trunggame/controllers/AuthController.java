@@ -75,7 +75,7 @@ public class AuthController {
 
         var currentUser = userRepository.findByUsername(userDetails.getUsername());
 
-        if(currentUser.isPresent()){
+        if(currentUser.isPresent()&& currentUser.get().getStatus()==EUserStatus.ACTIVE){
             String newPassword=encoder.encode(changeRequest.getNewPassword());
 
             var user = currentUser.get();

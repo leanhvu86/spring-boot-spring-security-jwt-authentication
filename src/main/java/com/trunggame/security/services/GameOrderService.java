@@ -1,9 +1,6 @@
 package com.trunggame.security.services;
 
-import com.trunggame.dto.BaseResponseDTO;
-import com.trunggame.dto.GetOrderDTO;
-import com.trunggame.dto.OrderDTO;
-import com.trunggame.dto.OrderInfoDTO;
+import com.trunggame.dto.*;
 import com.trunggame.models.GameOrder;
 
 import java.util.List;
@@ -14,5 +11,7 @@ public interface GameOrderService {
     OrderDTO detailById(Long id);
     void deleteOrder(Long id);
     List<GameOrder> getAllOrders(GetOrderDTO getOrderDTO);
+    List<GameOrder> getCheckOrder();
     void updateOrderStatus(GetOrderDTO getOrderDTO);
+    OrderInfoDetailDTO updateOrderDetailStatus(OrderInfoDetailDTO getOrderDTO);
 }

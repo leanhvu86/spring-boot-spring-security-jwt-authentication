@@ -13,4 +13,5 @@ import java.util.List;
 public interface GameOrderRepository extends JpaRepository<GameOrder, Long> {
     Page<GameOrder> findAll(Specification<GameOrder> spec, Pageable pageable);
 
+    List<GameOrder> findByStatus(String status);
 }

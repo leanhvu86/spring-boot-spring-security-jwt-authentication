@@ -1,9 +1,6 @@
 package com.trunggame.controllers;
 
-import com.trunggame.dto.BaseResponseDTO;
-import com.trunggame.dto.GetOrderDTO;
-import com.trunggame.dto.OrderDTO;
-import com.trunggame.dto.OrderInfoDTO;
+import com.trunggame.dto.*;
 import com.trunggame.models.GameOrder;
 import com.trunggame.security.services.GameOrderService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,6 +41,12 @@ public class OrderController {
         return orderService.getAllOrders(getOrderDTO);
     }
 
+    @GetMapping("/check-order")
+    @PreAuthorize("hasRole('ADMIN')")
+    public List<GameOrder> getCheckOrder() {
+        return orderService.getCheckOrder();
+    }
+
 
     @PostMapping("/update/status")
     @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
@@ -52,9 +55,17 @@ public class OrderController {
     }
 
 
-    @PostMapping("/delete/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
-    public void deleteOrder(@PathVariable Long id) {
-         orderService.deleteOrder(id);
+//    @PostMapping("/delete/{id}")
+//    @PreAuthorize("hasRole('ADMIN')")
+//    public void deleteOrder(@PathVariable Long id) {
+//         orderService.deleteOrder(id);
+//    }
+
+    @PostMapping("/update/order-detail/status")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
+    public void updateOrderDetailStatus(@RequestBody OrderInfoDetailDTO orderInfoDetailDTO) {
+        orderService.updateOrderDetailStatus(orderInfoDetailDTO);
     }
+
+
 }

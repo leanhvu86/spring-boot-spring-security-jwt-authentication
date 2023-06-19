@@ -45,10 +45,10 @@ public class GameController {
         return gameService.updateGame(input);
     }
 
-    @GetMapping("/delete/{id}")
+    @PostMapping("/delete")
     @PreAuthorize("hasRole('ADMIN')")
-    public BaseResponseDTO<?> deleteGames(@PathVariable Long id) {
-        return gameService.deleteGame(id);
+    public BaseResponseDTO<?> deleteGames(@RequestBody GameInputDTO gameInputDTO) {
+        return gameService.deleteGame(gameInputDTO);
     }
 
     @GetMapping("")
