@@ -30,4 +30,5 @@ public class OrderInfoDetailDTO {
     private String account;
     private String loginCode;
     private String status;
+    private String description;
 }

@@ -156,7 +156,7 @@ public class GameOrderServiceImpl implements GameOrderService {
                 var serverGameGroup = gameServerGroupRepository.findAllByGameId(game.get().getId());
                 var category = categoryRepository.findById(game.get().getCategoryId());
                 var pack = packageRepository.findById(orderDetailEntity.getPackageId());
-                orderDetail.setId(gameOrder.get().getId());
+                orderDetail.setId(orderDetailEntity.getId());
                 orderDetail.setGameId(game.get().getId());
                 orderDetail.setGamePackage(pack.get());
                 orderDetail.setLoginCode(orderDetailEntity.getLoginCode());
@@ -172,6 +172,7 @@ public class GameOrderServiceImpl implements GameOrderService {
                 orderDetail.setStatus(orderDetailEntity.getStatus());
                 orderDetail.setServer(orderDetailEntity.getServerName());
                 orderDetail.setGameCategories(category.get());
+                orderDetail.setDescription(orderDetailEntity.getDescription());
                 orderDetails.add(orderDetail);
 
             }
@@ -282,6 +283,7 @@ public class GameOrderServiceImpl implements GameOrderService {
             detail.setAmount(orderInfoDetailDTO.getAmount());
             detail.setPassword(orderInfoDetailDTO.getPassword());
             detail.setServerName(orderInfoDetailDTO.getServer());
+            detail.setDescription(orderInfoDetailDTO.getDescription());
             gameOrderDetailRepository.save(detail);
             return orderInfoDetailDTO;
         }

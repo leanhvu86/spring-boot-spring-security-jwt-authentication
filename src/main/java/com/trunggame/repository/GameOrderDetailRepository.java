@@ -11,7 +11,8 @@ import java.util.List;
 @Repository
 public interface GameOrderDetailRepository extends JpaRepository<GameOrderDetail, Long> {
     List<GameOrderDetail> findAllByGameId(Long gameId);
-    List<GameOrderDetail> findAllByGameOrderId(Long gameId);
+
+    List<GameOrderDetail> findAllByGameOrderId(Long gameOrderId);
 
     @Transactional
     @Modifying

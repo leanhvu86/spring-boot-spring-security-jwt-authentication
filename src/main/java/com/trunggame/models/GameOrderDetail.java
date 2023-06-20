@@ -62,6 +62,8 @@ public class GameOrderDetail {
     @Column(name = "login_code")
     private String loginCode;
 
+    @Column(name = "description",length = 1000, columnDefinition = "TEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci")
+    private String description;
 
     @Column(name = "amount")
     private BigDecimal amount;
