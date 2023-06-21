@@ -7,6 +7,7 @@ import com.trunggame.models.GameOrderDetail;
 import com.trunggame.repository.*;
 import com.trunggame.repository.impl.OrderRepositoryCustom;
 import com.trunggame.security.services.GameOrderService;
+import com.trunggame.security.services.UserService;
 import org.aspectj.weaver.ast.Or;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
@@ -18,6 +19,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.mail.MessagingException;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -50,6 +52,9 @@ public class GameOrderServiceImpl implements GameOrderService {
     CategoryRepository categoryRepository;
 
     @Autowired
+    UserService userService;
+
+    @Autowired
     UserRepository userRepository;
 
     @Autowired
@@ -57,7 +62,7 @@ public class GameOrderServiceImpl implements GameOrderService {
 
     @Override
     @Transactional
-    public BaseResponseDTO<?> createOrder(OrderInfoDTO orderInfoDTO) {
+    public BaseResponseDTO<?> createOrder(OrderInfoDTO orderInfoDTO) throws MessagingException {
 
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication()
                 .getPrincipal();
@@ -101,6 +106,7 @@ public class GameOrderServiceImpl implements GameOrderService {
         gameOrderDetailRepository.saveAll(gameOrderDetails);
         gameOrderEntity.setTotalAmount(sum);
         gameOrderRepository.save(gameOrderEntity);
+        userService.sendEmailOrderSuccessful(currentUser.get().getFullName(),currentUser.get().getEmail(),uuID);
         return new BaseResponseDTO<>("Success", 200, 200, gameOrderEntity);
     }
 

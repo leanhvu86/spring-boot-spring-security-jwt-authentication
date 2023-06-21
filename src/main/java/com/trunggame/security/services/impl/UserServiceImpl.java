@@ -7,6 +7,7 @@ import com.trunggame.repository.UserRepository;
 import com.trunggame.security.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.mail.*;
@@ -26,6 +27,9 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     UserRepository userRepository;
+
+    @Autowired
+    PasswordEncoder encoder;
 
     @Override
     public void deleteUserByIds(List ids) {
@@ -89,9 +93,11 @@ public class UserServiceImpl implements UserService {
         var user = userRepository.findByUsername(signupRequestDTO.getUsername());
         if (user.isPresent()) {
             String password = RandGeneratedStr(10);
-            user.get().setPassword(password);
-            userRepository.save(user.get());
-            sendEmailRegister(user.get());
+            var userTemp = user.get();
+            userTemp.setPassword(encoder.encode(password));
+            userRepository.save(userTemp);
+            userTemp.setPassword(password);
+            sendEmailRegister(userTemp);
             return true;
         }
         return false;
@@ -139,7 +145,7 @@ public class UserServiceImpl implements UserService {
 
         // a list of characters to choose from in form of a string
 
-        String randomString = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvxyz0123456789";
+        String randomString = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvxyz0123456789!@#$%^&*";
 
         // creating a StringBuffer size of AlphaNumericStr
 
@@ -162,5 +168,19 @@ public class UserServiceImpl implements UserService {
         return s.toString();
 
     }
+
+    @Override
+    public Boolean sendEmailOrderSuccessful(String fullName, String email, String orderCode) throws MessagingException {
+
+        String html = "<h2>Hi " + fullName + "</h2><br/>" +
+                "<p> Welcome to join with us on Trung Games website <br/>\n" +
+                "Thank you for booking the order: <strong>" + orderCode + "</strong><br/>\n" +
+                "We will contact you immediately!<br/> \n" +
+                "Have a good experience on our service!</p>";
+
+        this.sendAsHtml(email,
+                "[TRUNGGAMES] Congratulation! You have booked an order successfully!",
+                html);
+        return true;    }
 
 }

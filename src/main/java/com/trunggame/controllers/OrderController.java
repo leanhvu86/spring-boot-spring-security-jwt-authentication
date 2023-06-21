@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import javax.mail.MessagingException;
 import java.util.List;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
@@ -19,7 +20,7 @@ public class OrderController {
 
     @PostMapping("/create")
     @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
-    public BaseResponseDTO<?>  createOrder(@RequestBody OrderInfoDTO orderInfoDTO) {
+    public BaseResponseDTO<?>  createOrder(@RequestBody OrderInfoDTO orderInfoDTO) throws MessagingException {
         return orderService.createOrder(orderInfoDTO);
     }
 
