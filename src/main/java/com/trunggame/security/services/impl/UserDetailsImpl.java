@@ -1,6 +1,7 @@
 package com.trunggame.security.services.impl;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.trunggame.enums.EUserStatus;
 import com.trunggame.models.User;
 import lombok.Getter;
 import lombok.Setter;
@@ -34,9 +35,11 @@ public class UserDetailsImpl implements UserDetails {
     @JsonIgnore
     private String password;
 
+    private EUserStatus status;
+
     private Collection<? extends GrantedAuthority> authorities;
 
-    public UserDetailsImpl(Long id, String username, String nickname, String email, String password,
+    public UserDetailsImpl(Long id, String username, String nickname, String email, String password,EUserStatus status,
                            Collection<? extends GrantedAuthority> authorities, String fullName, String address, String phoneNumber) {
         this.id = id;
         this.username = username;
@@ -47,6 +50,7 @@ public class UserDetailsImpl implements UserDetails {
         this.fullName = fullName;
         this.address = address;
         this.phoneNumber = phoneNumber;
+        this.status= status;
     }
 
     public static UserDetailsImpl build(User user) {
@@ -60,6 +64,7 @@ public class UserDetailsImpl implements UserDetails {
                 user.getNickname(),
                 user.getEmail(),
                 user.getPassword(),
+                user.getStatus(),
                 authorities,
                 user.getFullName(),
                 user.getAddress(),

@@ -19,6 +19,8 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     Boolean existsByEmail(String email);
 
+    Boolean existsByPhoneNumber(String phoneNumber);
+
     @Transactional
     @Modifying
     @Query(value = "UPDATE users SET status = 'DELETED' WHERE id IN (:ids) ", nativeQuery = true)

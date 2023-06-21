@@ -1,9 +1,6 @@
 package com.trunggame.controllers;
 
-import com.trunggame.dto.BaseResponseDTO;
-import com.trunggame.dto.JwtResponseDTO;
-import com.trunggame.dto.LoginRequestDTO;
-import com.trunggame.dto.SignupRequestDTO;
+import com.trunggame.dto.*;
 import com.trunggame.enums.ERole;
 import com.trunggame.enums.EUserStatus;
 import com.trunggame.models.Role;
@@ -13,8 +10,6 @@ import com.trunggame.repository.UserRepository;
 import com.trunggame.security.jwt.JwtUtils;
 import com.trunggame.security.services.UserService;
 import com.trunggame.security.services.impl.UserDetailsImpl;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -75,16 +70,17 @@ public class AuthController {
 
         var currentUser = userRepository.findByUsername(userDetails.getUsername());
 
-        if(currentUser.isPresent()&& currentUser.get().getStatus()==EUserStatus.ACTIVE){
-            String newPassword=encoder.encode(changeRequest.getNewPassword());
+        if (currentUser.isPresent() && currentUser.get().getStatus() == EUserStatus.ACTIVE) {
+            String newPassword = encoder.encode(changeRequest.getNewPassword());
 
             var user = currentUser.get();
             user.setPassword(newPassword);
             userRepository.save(user);
             return new BaseResponseDTO<>("Change Password successfully!", 200, 200, currentUser.get());
-        }else
+        } else
             return new BaseResponseDTO<>("User not found successfully!", 401, 401, null);
     }
+
     @PostMapping("/signin")
     public BaseResponseDTO<JwtResponseDTO> authenticateUser(@Valid @RequestBody LoginRequestDTO loginRequest) {
 
@@ -95,30 +91,42 @@ public class AuthController {
         String jwt = jwtUtils.generateJwtToken(authentication);
 
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
-        List<String> roles = userDetails.getAuthorities().stream()
-                .map(item -> item.getAuthority())
-                .collect(Collectors.toList());
+        if (userDetails.getStatus() == EUserStatus.ACTIVE) {
+            List<String> roles = userDetails.getAuthorities().stream()
+                    .map(item -> item.getAuthority())
+                    .collect(Collectors.toList());
 
-        return new BaseResponseDTO<>("Success", 200, 200, new JwtResponseDTO(jwt,
-                userDetails.getId(),
-                userDetails.getNickname(),
-                userDetails.getEmail(),
-                roles, userDetails.getAddress(), userDetails.getFullName(), userDetails.getPhoneNumber()));
+            return new BaseResponseDTO<>("Success", 200, 200, new JwtResponseDTO(jwt,
+                    userDetails.getId(),
+                    userDetails.getNickname(),
+                    userDetails.getEmail(),
+                    roles, userDetails.getAddress(), userDetails.getFullName(), userDetails.getPhoneNumber()));
+        } else
+            return new BaseResponseDTO<>("User not found successfully!", 401, 401, null);
     }
 
-    //  @ApiOperation(value = "Login", response = BaseResponseDTO.class)
+    @PostMapping("/validate-phone-email")
+    public BaseResponseDTO<?> validatePhoneAndEmail(@Valid @RequestBody ValidateRequestDTO signupRequestDTO) {
+
+        return new BaseResponseDTO<>("Check success!", 200, 200, userService.validatePhoneAndEmail(signupRequestDTO));
+    }
+
+    @PostMapping("/forget-password")
+    public BaseResponseDTO<?> forgetPassword(@Valid @RequestBody ValidateRequestDTO signupRequestDTO) throws MessagingException {
+
+        return new BaseResponseDTO<>("Check success!", 200, 200, userService.forgetPassword(signupRequestDTO));
+    }
+
     @PostMapping("/auth")
     public BaseResponseDTO<?> authUser() throws MessagingException {
         UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication()
                 .getPrincipal();
         var currentUser = userRepository.findByUsername(userDetails.getUsername());
 
-        if(currentUser.isEmpty()) {
-            return new BaseResponseDTO<>("User does not exist", 400, 400,null);
-        }
-        else{
+        if (currentUser.isEmpty()) {
+            return new BaseResponseDTO<>("User does not exist", 400, 400, null);
+        } else {
             return new BaseResponseDTO<>("Token still work!", 200, 200, currentUser.get());
-
         }
     }
 
@@ -132,10 +140,11 @@ public class AuthController {
             return new BaseResponseDTO<>("Error: Email is already in use!", 400, 400, null);
         }
 
+        String password = userService.RandGeneratedStr(10);
         // Create new user's account
-        User user = new User(signUpRequest.getNickname(),signUpRequest.getUsername(),
+        User user = new User(signUpRequest.getNickname(), signUpRequest.getUsername(),
                 signUpRequest.getEmail(),
-                encoder.encode(this.defaultPassword), signUpRequest.getPhoneNumber(), signUpRequest.getFullName(),
+                encoder.encode(password), signUpRequest.getPhoneNumber(), signUpRequest.getFullName(),
                 signUpRequest.getAddress(), EUserStatus.ACTIVE);
 
         Set<String> strRoles = signUpRequest.getRole();
@@ -169,7 +178,8 @@ public class AuthController {
 
         user.setRoles(roles);
         userRepository.save(user);
-        //userService.sendEmailRegister(user);
+        user.setPassword(password);
+        userService.sendEmailRegister(user);
         return new BaseResponseDTO<>("User registered successfully!", 200, 200, null);
     }
 }
