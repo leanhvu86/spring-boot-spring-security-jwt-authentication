@@ -139,7 +139,7 @@ public class UserServiceImpl implements UserService {
 
         // a list of characters to choose from in form of a string
 
-        String randomString = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvxyz0123456789!@#$%^&*";
+        String randomString = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvxyz0123456789";
 
         // creating a StringBuffer size of AlphaNumericStr
 
