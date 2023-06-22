@@ -1,6 +1,8 @@
 package com.trunggame.repository.impl;
 
+import com.trunggame.dto.BannerDTO;
 import com.trunggame.dto.GamePackageDTO;
+import com.trunggame.models.Banner;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
@@ -31,6 +33,44 @@ public class PostRespositoryCustom {
                 .rating(rs.getLong("rating"))
                 .attribute(rs.getString("attribute"))
                 .previewUrl(rs.getString("preview_url"))
+                .build());
+    }
+
+    public List<BannerDTO> getAllBanner() {
+
+        String sql = "select banner0_.id as id, banner0_.created_at as created_at, banner0_.file_id as file_id" +
+                            ", banner0_.image_url as image_url, banner0_.priority as priority, banner0_.status as status, " +
+                            "banner0_.updated_at as updated_at from banner banner0_\n" +
+                        "order by status asc , priority asc";
+
+        System.out.println(sql);
+
+        return jdbcTemplate.query(sql, (rs, rowNum) -> BannerDTO.
+                builder()
+                .id(rs.getLong("id"))
+                .imageUrl(rs.getString("image_url"))
+                .priority(rs.getString("priority"))
+                .fileId(rs.getString("file_id"))
+                .status(rs.getString("status"))
+                .build());
+    }
+
+    public List<BannerDTO> getAllActiveBanner() {
+
+        String sql = "select banner0_.id as id, banner0_.created_at as created_at, banner0_.file_id as file_id" +
+                            ", banner0_.image_url as image_url, banner0_.priority as priority, banner0_.status as status, " +
+                            "banner0_.updated_at as updated_at from banner banner0_\n" +
+                        "where status ='ACTIVE' order by priority asc";
+
+        System.out.println(sql);
+
+        return jdbcTemplate.query(sql, (rs, rowNum) -> BannerDTO.
+                builder()
+                .id(rs.getLong("id"))
+                .fileId(rs.getString("file_id"))
+                .imageUrl(rs.getString("image_url"))
+                .priority(rs.getString("priority"))
+                .status(rs.getString("status"))
                 .build());
     }
 

@@ -6,6 +6,7 @@ import com.trunggame.models.*;
 import com.trunggame.repository.*;
 import com.trunggame.repository.impl.GameRepositoryCustom;
 import com.trunggame.repository.impl.PackageRepositoryImpl;
+import com.trunggame.repository.impl.PostRespositoryCustom;
 import com.trunggame.security.services.GameService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,22 +57,19 @@ public class GameServiceImpl implements GameService {
     private GameRepositoryCustom gameRepositoryCustom;
 
     @Autowired
-    private PackageRepository gamePackageRepository;
-
-    @Autowired
     private CompanyRepository companyRepository;
 
     @Autowired
     private MarketTypeRepository marketTypeRepository;
 
     @Autowired
-    private BannerRepository bannerRepository;
-
-    @Autowired
     private PostRepository postRepository;
 
     @Autowired
     private PackageRepositoryImpl packageRepositoryCustom;
+
+    @Autowired
+    private PostRespositoryCustom postRespositoryCustom;
 
     @Override
     @Transactional
@@ -299,7 +297,7 @@ public class GameServiceImpl implements GameService {
         return LoadDataDTO.builder()
                 .listGame(games)
                 .newGames(this.gameRepositoryCustom.getNewGamge())
-                .banners(this.bannerRepository.findBannerByStatus(Banner.Status.ACTIVE))
+                .banners(postRespositoryCustom.getAllActiveBanner())
                 .posts(postRepository.findByStatus(Post.Status.ACTIVE))
                 .newPackage(packageRepositoryCustom.getNewPackage())
                 .topSale(packageRepositoryCustom.getTopSale())

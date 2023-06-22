@@ -17,10 +17,10 @@ public class BannerDTO {
 
     private String status;
 
-    @NonNull
     private String fileId;
 
     private String imageUrl;
+    private String priority;
 
 }
 

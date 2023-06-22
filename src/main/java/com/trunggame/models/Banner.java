@@ -31,6 +31,9 @@ public class Banner {
 
     @Column(name = "imageUrl")
     private String imageUrl;
+    
+    @Column(name = "priority")
+    private String priority;
 
     @CreatedDate
     @Column(name = "created_at", nullable = false, updatable = false)
