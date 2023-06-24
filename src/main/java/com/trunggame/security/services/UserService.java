@@ -14,6 +14,8 @@ public interface UserService {
 
     Boolean sendEmailRegister(User user) throws MessagingException;
 
+    Boolean sendEmailForget(User user) throws MessagingException;
+
     Boolean sendEmailRegister() throws MessagingException;
 
     String validatePhoneAndEmail(ValidateRequestDTO signupRequestDTO);

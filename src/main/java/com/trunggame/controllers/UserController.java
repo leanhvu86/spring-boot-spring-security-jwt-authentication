@@ -3,6 +3,7 @@ package com.trunggame.controllers;
 import com.trunggame.dto.BaseResponseDTO;
 import com.trunggame.dto.UserDeleteDTO;
 import com.trunggame.dto.UserUpdateDTO;
+import com.trunggame.enums.EUserStatus;
 import com.trunggame.models.User;
 import com.trunggame.repository.RoleRepository;
 import com.trunggame.repository.UserRepository;
@@ -87,7 +88,7 @@ public class UserController {
     public BaseResponseDTO<?> updateUser(@RequestBody UserUpdateDTO userUpdateDTO) {
         var userOPT = userRepository.findById(userUpdateDTO.getId());
 
-        if (userOPT.isPresent()) {
+        if (userOPT.isPresent()&&userOPT.get().getStatus() != EUserStatus.DELETED) {
             var currentUser = userOPT.get();
             currentUser.setNickname(userUpdateDTO.getNickName());
             currentUser.setAddress(userUpdateDTO.getAddress());
@@ -96,7 +97,7 @@ public class UserController {
             userRepository.save(currentUser);
             return new BaseResponseDTO<>("Success", 200, 200, null);
         }
-        return new BaseResponseDTO<>("Error deleting user", 400, 400, null);
+        return new BaseResponseDTO<>("Error deleting user", 401, 401, null);
     }
 
 }

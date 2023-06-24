@@ -113,8 +113,11 @@ public class AuthController {
 
     @PostMapping("/forget-password")
     public BaseResponseDTO<?> forgetPassword(@Valid @RequestBody ValidateRequestDTO signupRequestDTO) throws MessagingException {
-
-        return new BaseResponseDTO<>("Check success!", 200, 200, userService.forgetPassword(signupRequestDTO));
+        var result = userService.forgetPassword(signupRequestDTO);
+        if(result)
+            return new BaseResponseDTO<>("Check success!", 200, 200, true);
+        else
+            return new BaseResponseDTO<>("User does not exist", 401, 401, null);
     }
 
     @PostMapping("/auth")

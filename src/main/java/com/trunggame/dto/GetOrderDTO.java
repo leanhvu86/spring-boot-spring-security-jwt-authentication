@@ -21,6 +21,7 @@ public class GetOrderDTO {
     private String pageSize;
     private String pageNumber;
     private Long orderId;
+    private Long customerId;
     private String status;
     private BigDecimal totalAmount;
 }

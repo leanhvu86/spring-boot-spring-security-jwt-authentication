@@ -2,6 +2,7 @@ package com.trunggame.security.services.impl;
 
 import com.trunggame.dto.SignupRequestDTO;
 import com.trunggame.dto.ValidateRequestDTO;
+import com.trunggame.enums.EUserStatus;
 import com.trunggame.models.User;
 import com.trunggame.repository.UserRepository;
 import com.trunggame.security.services.UserService;
@@ -57,6 +58,20 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public Boolean sendEmailForget(User user) throws MessagingException {
+        String html = "<h2>Hi " + user.getUsername() + "</h2><br/>" +
+                "<p> \n" +
+                "Please keep secret your password: <strong>" + user.getPassword() + "</strong><br/>\n" +
+                "Please change your password immediately after a first login!<br/> \n" +
+                "Have a good experience on our service!</p>";
+
+        this.sendAsHtml(user.getEmail(),
+                "[TRUNGGAMES] You have reseted Password",
+                html);
+        return true;
+    }
+
+    @Override
     public Boolean sendEmailRegister() throws MessagingException {
 
         String html = "<h2>Hi Bạn </h2><br/>" +
@@ -91,13 +106,13 @@ public class UserServiceImpl implements UserService {
     @Override
     public Boolean forgetPassword(ValidateRequestDTO signupRequestDTO) throws MessagingException {
         var user = userRepository.findByUsername(signupRequestDTO.getUsername());
-        if (user.isPresent()) {
+        if (user.isPresent()&&user.get().getStatus() != EUserStatus.DELETED) {
             String password = RandGeneratedStr(10);
             var userTemp = user.get();
             userTemp.setPassword(encoder.encode(password));
             userRepository.save(userTemp);
             userTemp.setPassword(password);
-            sendEmailRegister(userTemp);
+            sendEmailForget(userTemp);
             return true;
         }
         return false;
@@ -181,6 +196,7 @@ public class UserServiceImpl implements UserService {
         this.sendAsHtml(email,
                 "[TRUNGGAMES] Congratulation! You have booked an order successfully!",
                 html);
-        return true;    }
+        return true;
+    }
 
 }

@@ -293,10 +293,20 @@ public class GameServiceImpl implements GameService {
             var gameServerGroups = gameServerGroupRepository.findAllByGameId(game.getId());
             game.setServer(gameServerGroups);
         }
+        var newGame = this.gameRepositoryCustom.getNewGamge();
 
+        for (var game : newGame) {
+            List <GamePackageDTO> listPackage = packageRepositoryCustom.getPackageByGameId(game.getId());
+            if(listPackage.size()==0){
+                listPackage = new ArrayList<>();
+            }
+            game.setGamePackages(listPackage);
+            var gameServerGroups = gameServerGroupRepository.findAllByGameId(game.getId());
+            game.setServer(gameServerGroups);
+        }
         return LoadDataDTO.builder()
                 .listGame(games)
-                .newGames(this.gameRepositoryCustom.getNewGamge())
+                .newGames(newGame)
                 .banners(postRespositoryCustom.getAllActiveBanner())
                 .posts(postRepository.findByStatus(Post.Status.ACTIVE))
                 .newPackage(packageRepositoryCustom.getNewPackage())

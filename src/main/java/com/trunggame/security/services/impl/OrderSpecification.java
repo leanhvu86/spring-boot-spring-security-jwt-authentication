@@ -10,6 +10,10 @@ public class OrderSpecification {
         return StringUtils.isEmpty(server) ? null : (root, query, builder) -> builder.equal(root.get("serverName"), server);
     }
 
+    public static Specification<GameOrder> customerId(Long id) {
+        return id>0 ? null : (root, query, builder) -> builder.equal(root.get("customerId"), id);
+    }
+
     public static Specification<GameOrder> loginTypeEqual(String loginType) {
         return StringUtils.isEmpty(loginType) ? null : (root, query, builder) -> builder.equal(root.get("loginType"), loginType);
     }

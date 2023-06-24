@@ -14,6 +14,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
@@ -68,8 +69,8 @@ public class GameOrderServiceImpl implements GameOrderService {
                 .getPrincipal();
         var currentUser = userRepository.findByUsername(userDetails.getUsername());
 
-        if (currentUser.isEmpty()) {
-            return new BaseResponseDTO<>("User does not exist", 400, 400, null);
+        if (currentUser.isEmpty() || currentUser.get().getStatus() == EUserStatus.DELETED) {
+            return new BaseResponseDTO<>("User does not exist", 401, 401, null);
         }
 
         String uuID = UUID.randomUUID().toString();
@@ -106,7 +107,7 @@ public class GameOrderServiceImpl implements GameOrderService {
         gameOrderDetailRepository.saveAll(gameOrderDetails);
         gameOrderEntity.setTotalAmount(sum);
         gameOrderRepository.save(gameOrderEntity);
-        userService.sendEmailOrderSuccessful(currentUser.get().getFullName(),currentUser.get().getEmail(),uuID);
+//        userService.sendEmailOrderSuccessful(currentUser.get().getFullName(),currentUser.get().getEmail(),uuID);
         return new BaseResponseDTO<>("Success", 200, 200, gameOrderEntity);
     }
 
@@ -233,6 +234,15 @@ public class GameOrderServiceImpl implements GameOrderService {
 
     @Override
     public List<GameOrder> getAllOrders(GetOrderDTO getOrderDTO) {
+        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication()
+                .getPrincipal();
+
+        List<String> roles = userDetails.getAuthorities().stream()
+                    .map(GrantedAuthority::getAuthority)
+                    .collect(Collectors.toList());
+        var user = userRepository.findByUsername(userDetails.getUsername());
+
+
         String orderCode = getOrderDTO.getOrderCode();
         String orderBy = getOrderDTO.getOrderBy();
         String orderType = getOrderDTO.getOrderType();
@@ -243,6 +253,9 @@ public class GameOrderServiceImpl implements GameOrderService {
         Pageable pageable = PageRequest.of(pageNumber, pageSize, Sort.by(orderBy));
         Specification<GameOrder> spec = Specification.where(OrderSpecification.orderCodeEqual(orderCode));
 
+        if(!Objects.equals(roles.get(0), "ROLE_ADMIN")){
+            spec.and(OrderSpecification.customerId(user.get().getId()));
+        }
         if (orderType.equalsIgnoreCase("desc")) {
             pageable = ((PageRequest) pageable).withSort(Sort.by(orderBy).descending());
         }
