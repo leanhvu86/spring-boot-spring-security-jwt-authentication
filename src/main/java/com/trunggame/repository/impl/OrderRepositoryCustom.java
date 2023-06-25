@@ -19,14 +19,15 @@ public class OrderRepositoryCustom {
 
         String sql =
                 "select coalesce(sum(total_amount),0) total_amount_trade ," +
-                        "count(id) trade_count " +
-                    "from game_order where  status = '4' and customer_id = "+customerId;
+                        "count(id)  success_count, (select count(od.id) from game_order od where od.customer_id = "+customerId+") trade_count " +
+                    "from game_order where  status = '3' and customer_id = "+customerId;
 
         System.out.println(sql);
 
         return jdbcTemplate.query(sql, (rs, rowNum) -> OrderDTO.
                 builder()
                 .totalAmountTrade(rs.getBigDecimal("total_amount_trade"))
+                .successCount(rs.getInt("success_count"))
                 .tradeCount(rs.getInt("trade_count"))
                 .build());
     }

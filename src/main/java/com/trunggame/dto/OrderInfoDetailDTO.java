@@ -31,4 +31,5 @@ public class OrderInfoDetailDTO {
     private String loginCode;
     private String status;
     private String description;
+    private String previewUrl;
 }

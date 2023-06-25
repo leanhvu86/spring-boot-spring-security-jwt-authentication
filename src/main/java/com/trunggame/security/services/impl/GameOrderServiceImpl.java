@@ -41,6 +41,9 @@ public class GameOrderServiceImpl implements GameOrderService {
     PackageRepository packageRepository;
 
     @Autowired
+    FileRepository fileRepository;
+
+    @Autowired
     GameOrderDetailRepository gameOrderDetailRepository;
 
     @Autowired
@@ -163,6 +166,7 @@ public class GameOrderServiceImpl implements GameOrderService {
                 var serverGameGroup = gameServerGroupRepository.findAllByGameId(game.get().getId());
                 var category = categoryRepository.findById(game.get().getCategoryId());
                 var pack = packageRepository.findById(orderDetailEntity.getPackageId());
+                var file = fileRepository.findFirstByUniqId(pack.get().getImageId());
                 orderDetail.setId(orderDetailEntity.getId());
                 orderDetail.setGameId(game.get().getId());
                 orderDetail.setGamePackage(pack.get());
@@ -180,6 +184,7 @@ public class GameOrderServiceImpl implements GameOrderService {
                 orderDetail.setServer(orderDetailEntity.getServerName());
                 orderDetail.setGameCategories(category.get());
                 orderDetail.setDescription(orderDetailEntity.getDescription());
+                orderDetail.setPreviewUrl(file.get().getPreviewUrl());
                 orderDetails.add(orderDetail);
 
             }
@@ -202,10 +207,12 @@ public class GameOrderServiceImpl implements GameOrderService {
                     .orderDetailList(orderDetails)
                     .customerName(name)
                     .createdAt(gameOrder.get().getCreatedAt())
+                    .updatedAt(gameOrder.get().getUpdatedAt())
                     .phoneNumber(phone)
                     .email(email)
                     .status(gameOrder.get().getStatus())
                     .tradeCount(userTradeInfo.get(0).getTradeCount())
+                    .successCount(userTradeInfo.get(0).getSuccessCount())
                     .totalAmount(gameOrder.get().getTotalAmount())
                     .totalAmountTrade(userTradeInfo.get(0).getTotalAmountTrade())
                     .userStatus(userStatus)
@@ -219,6 +226,7 @@ public class GameOrderServiceImpl implements GameOrderService {
         var gameOrder = gameOrderRepository.findById(id);
         if (gameOrder.isPresent()) {
             gameOrder.get().setStatus("4");
+            gameOrder.get().setUpdatedAt(LocalDateTime.now());
             gameOrderRepository.save(gameOrder.get());
         }
     }
@@ -291,6 +299,7 @@ public class GameOrderServiceImpl implements GameOrderService {
             }
             order.get().setStatus(getOrderDTO.getStatus());
             order.get().setTotalAmount(getOrderDTO.getTotalAmount());
+            order.get().setUpdatedAt(LocalDateTime.now());
             gameOrderRepository.save(order.get());
         }
     }

@@ -54,6 +54,7 @@ public class PackageRepositoryImpl {
                 .name(rs.getString("name"))
                 .price(rs.getLong("price"))
                 .unit(rs.getString("unit"))
+                .gameId(rs.getLong("game_id"))
                 .warehouseQuantity(rs.getInt("warehouse_quantity"))
                 .tradeCount(rs.getInt("trade_count"))
                 .rating(rs.getLong("rating"))
