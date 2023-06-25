@@ -234,15 +234,6 @@ public class GameOrderServiceImpl implements GameOrderService {
 
     @Override
     public List<GameOrder> getAllOrders(GetOrderDTO getOrderDTO) {
-        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication()
-                .getPrincipal();
-
-        List<String> roles = userDetails.getAuthorities().stream()
-                    .map(GrantedAuthority::getAuthority)
-                    .collect(Collectors.toList());
-        var user = userRepository.findByUsername(userDetails.getUsername());
-
-
         String orderCode = getOrderDTO.getOrderCode();
         String orderBy = getOrderDTO.getOrderBy();
         String orderType = getOrderDTO.getOrderType();
@@ -253,13 +244,31 @@ public class GameOrderServiceImpl implements GameOrderService {
         Pageable pageable = PageRequest.of(pageNumber, pageSize, Sort.by(orderBy));
         Specification<GameOrder> spec = Specification.where(OrderSpecification.orderCodeEqual(orderCode));
 
-        if(!Objects.equals(roles.get(0), "ROLE_ADMIN")){
-            spec.and(OrderSpecification.customerId(user.get().getId()));
-        }
         if (orderType.equalsIgnoreCase("desc")) {
             pageable = ((PageRequest) pageable).withSort(Sort.by(orderBy).descending());
         }
         return gameOrderRepository.findAll(spec, pageable).getContent();
+    }
+
+    @Override
+    public List<GameOrder> getAllOrdersByUserName(GetOrderDTO getOrderDTO) {
+        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext().getAuthentication()
+                .getPrincipal();
+        var user = userRepository.findByUsername(userDetails.getUsername());
+
+
+        String orderBy = getOrderDTO.getOrderBy();
+        String orderType = getOrderDTO.getOrderType();
+        int pageSize = Integer.parseInt(getOrderDTO.getPageSize());
+        int pageNumber = Integer.parseInt(getOrderDTO.getPageNumber());
+
+        // Use the filters to retrieve all orders from the database
+        Pageable pageable = PageRequest.of(pageNumber, pageSize, Sort.by(orderBy));
+
+        if (orderType.equalsIgnoreCase("desc")) {
+            pageable = ((PageRequest) pageable).withSort(Sort.by(orderBy).descending());
+        }
+        return gameOrderRepository.findByCustomerId(user.get().getId(), pageable).getContent();
     }
 
     @Override

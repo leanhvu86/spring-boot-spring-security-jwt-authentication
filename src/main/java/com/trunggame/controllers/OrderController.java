@@ -37,9 +37,15 @@ public class OrderController {
     }
 
     @GetMapping("")
-    @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
+    @PreAuthorize("hasRole('ADMIN')")
     public List<GameOrder> getAllOrders(@ModelAttribute GetOrderDTO getOrderDTO) {
         return orderService.getAllOrders(getOrderDTO);
+    }
+
+    @GetMapping("/filter")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
+    public List<GameOrder> getAllOrdersByUserName(@ModelAttribute GetOrderDTO getOrderDTO) {
+        return orderService.getAllOrdersByUserName(getOrderDTO);
     }
 
     @GetMapping("/check-order")
