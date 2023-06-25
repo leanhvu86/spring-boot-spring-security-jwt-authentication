@@ -111,6 +111,12 @@ public class AuthController {
         return new BaseResponseDTO<>("Check success!", 200, 200, userService.validatePhoneAndEmail(signupRequestDTO));
     }
 
+//    @PostMapping("/send-mail")
+//    public BaseResponseDTO<?> sendMail() throws MessagingException {
+//
+//        return new BaseResponseDTO<>("Check success!", 200, 200, userService.sendEmailRegister());
+//    }
+
     @PostMapping("/forget-password")
     public BaseResponseDTO<?> forgetPassword(@Valid @RequestBody ValidateRequestDTO signupRequestDTO) throws MessagingException {
         var result = userService.forgetPassword(signupRequestDTO);

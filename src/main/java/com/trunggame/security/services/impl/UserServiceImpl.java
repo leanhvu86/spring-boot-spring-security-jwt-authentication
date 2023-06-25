@@ -147,7 +147,7 @@ public class UserServiceImpl implements UserService {
         props.put("mail.smtp.socketFactory.class",
                 "javax.net.ssl.SSLSocketFactory");
         props.put("mail.smtp.auth", "true");
-        props.put("mail.smtp.host", "outlook.office365.com");
+        props.put("mail.smtp.host", "mail92211.maychuemail.com");
         props.put("mail.smtp.port", "587");
         return Session.getInstance(props, new Authenticator() {
             protected PasswordAuthentication getPasswordAuthentication() {
