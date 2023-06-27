@@ -22,6 +22,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -152,4 +153,28 @@ public class FileUploadController {
 
         return new BaseResponseDTO<>("Success", 200,200,fileDTOS);
     }
+
+    @PostMapping("/delete")
+    @PreAuthorize("hasRole('ADMIN')")
+    public BaseResponseDTO<Object> deleteFile(@RequestBody FileDTO file) throws Exception {
+        URI uri = new URI(file.getUrl());
+        String filename = uri.getPath().substring(uri.getPath().lastIndexOf('/') + 1);
+        var filePath = uploadPath + filename;
+
+        Path path = Paths.get(filePath);
+
+        try {
+            Files.delete(path);
+            System.out.println("File deleted successfully.");
+        } catch (IOException e) {
+            System.out.println("Failed to delete the file: " + e.getMessage());
+            throw new Exception(e);
+        }
+
+        return new BaseResponseDTO<>("Success", 200,200,null);
+    }
+
+
+
+
 }
