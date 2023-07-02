@@ -1,7 +1,6 @@
 package com.trunggame.security.services.impl;
 
 import com.trunggame.dto.*;
-import com.trunggame.enums.ECommonStatus;
 import com.trunggame.models.*;
 import com.trunggame.repository.*;
 import com.trunggame.repository.impl.GameRepositoryCustom;
@@ -312,6 +311,7 @@ public class GameServiceImpl implements GameService {
                 .newPackage(packageRepositoryCustom.getNewPackage())
                 .topSale(packageRepositoryCustom.getTopSale())
                 .bestSale(packageRepositoryCustom.getBestSale())
+                .packages(packageRepositoryCustom.getAllActivePackage())
                 .build();
     }
 

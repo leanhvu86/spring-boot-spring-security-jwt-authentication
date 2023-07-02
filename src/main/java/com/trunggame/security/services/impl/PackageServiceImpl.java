@@ -82,6 +82,7 @@ public class PackageServiceImpl implements PackageService {
                 .status(GamePackage.Status.ACTIVE)
                 .topSale(GamePackage.TopSaleStatus.INACTIVE)
                 .imageId(input.getImageId())
+                .tradeCount(input.getTradeCount())
                 .createdAt(LocalDateTime.now())
                 .updatedAt(LocalDateTime.now())
                 .build();
@@ -125,6 +126,7 @@ public class PackageServiceImpl implements PackageService {
         updatedPackage.setDescriptionEn(input.getDescriptionEn());
         updatedPackage.setDeliveryTime(input.getDeliveryTime());
         updatedPackage.setGameId(input.getGameId());
+        updatedPackage.setTradeCount(input.getTradeCount());
         updatedPackage.setTopSale(Objects.equals(input.getTopSale(), "ACTIVE") ?GamePackage.TopSaleStatus.ACTIVE:GamePackage.TopSaleStatus.INACTIVE);
         gamePackageRepository.save(updatedPackage);
 

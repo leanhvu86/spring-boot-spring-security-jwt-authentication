@@ -1,19 +1,17 @@
 package com.trunggame.controllers;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.trunggame.dto.BaseResponseDTO;
 import com.trunggame.dto.GameInputDTO;
-import com.trunggame.dto.LoadDataDTO;
-import com.trunggame.models.Game;
 import com.trunggame.repository.GameRepository;
 import com.trunggame.repository.PackageRepository;
 import com.trunggame.repository.impl.GameRepositoryCustom;
-import com.trunggame.security.jwt.AES;
 import com.trunggame.security.services.GameService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-
+import com.google.gson.Gson;
 import java.util.Base64;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
@@ -57,9 +55,12 @@ public class GameController {
     }
 
     @GetMapping("/load-data")
-    public BaseResponseDTO<?> loadData() {
-//        String originalInput = gameService.getLoadData().toString();
-//        String data = Base64.getEncoder().encodeToString(originalInput.getBytes());
+    public BaseResponseDTO<?> loadData() throws JsonProcessingException {
+//        ObjectMapper mapper = new ObjectMapper();
+//        String jsonString = mapper.writeValueAsString( gameService.getLoadData());
+//        System.out.println(jsonString);
+//        String data = Base64.getEncoder().encodeToString(jsonString.getBytes());
+
         return new BaseResponseDTO<>("Success", 200, 200, gameService.getLoadData());
     }
 

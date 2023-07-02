@@ -21,4 +21,5 @@ public class LoadDataDTO {
     private List<GamePackageDTO> topSale;
     private List<GamePackageDTO> newPackage;
     private List<GamePackageDTO> bestSale;
+    private List<GamePackageDTO> packages;
 }
