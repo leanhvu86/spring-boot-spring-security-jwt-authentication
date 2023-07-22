@@ -15,6 +15,7 @@ import java.util.List;
 @Setter
 public class GetOrderDTO {
     private String server;
+    private String code;
     private String loginType;
     private String characterName;
     private String orderCode;

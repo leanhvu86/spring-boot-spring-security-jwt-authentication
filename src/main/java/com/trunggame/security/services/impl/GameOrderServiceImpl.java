@@ -110,8 +110,8 @@ public class GameOrderServiceImpl implements GameOrderService {
         gameOrderDetailRepository.saveAll(gameOrderDetails);
         gameOrderEntity.setTotalAmount(sum);
         gameOrderRepository.save(gameOrderEntity);
-        userService.sendEmailOrderSuccessful(0,currentUser.get().getFullName(),currentUser.get().getEmail(),uuID,"https://trunggames.com/my-order/"+gameOrderEntity.getId());
-        userService.sendEmailOrderSuccessful(1,currentUser.get().getFullName(),"trungbet2512@gmail.com",uuID,"http://trunggames.com:8090/#/order/edit/"+gameOrderEntity.getId());
+        userService.sendEmailOrderSuccessful(0, currentUser.get().getFullName(), currentUser.get().getEmail(), uuID, "https://trunggames.com/my-order/" + gameOrderEntity.getId());
+        userService.sendEmailOrderSuccessful(1, currentUser.get().getFullName(), "trungbet2512@gmail.com", uuID, "http://trunggames.com:8090/#/order/edit/" + gameOrderEntity.getId());
         return new BaseResponseDTO<>("Success", 200, 200, gameOrderEntity);
     }
 
@@ -252,7 +252,9 @@ public class GameOrderServiceImpl implements GameOrderService {
         // Use the filters to retrieve all orders from the database
         Pageable pageable = PageRequest.of(pageNumber, pageSize, Sort.by(orderBy));
         Specification<GameOrder> spec = Specification.where(OrderSpecification.orderCodeEqual(orderCode));
-
+        if (getOrderDTO.getCode() != null && getOrderDTO.getCode() != "") {
+            spec = spec.and(OrderSpecification.codeLike(getOrderDTO.getCode()));
+        }
         if (orderType.equalsIgnoreCase("desc")) {
             pageable = ((PageRequest) pageable).withSort(Sort.by(orderBy).descending());
         }

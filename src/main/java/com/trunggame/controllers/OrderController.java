@@ -47,6 +47,7 @@ public class OrderController {
                 .orderList(orderService.getAllOrders(getOrderDTO))
                 .pageNumber(getOrderDTO.getPageNumber())
                 .pageSize(getOrderDTO.getPageSize())
+                .code(getOrderDTO.getCode())
                 .totalData(gameOrderRepository.count()).build();
         return dto;
     }

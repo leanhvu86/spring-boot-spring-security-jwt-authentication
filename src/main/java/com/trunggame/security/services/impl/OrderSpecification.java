@@ -18,8 +18,8 @@ public class OrderSpecification {
         return StringUtils.isEmpty(loginType) ? null : (root, query, builder) -> builder.equal(root.get("loginType"), loginType);
     }
 
-    public static Specification<GameOrder> characterNameLike(String characterName) {
-        return StringUtils.isEmpty(characterName) ? null : (root, query, builder) -> builder.like(root.get("characterName"), "%" + characterName + "%");
+    public static Specification<GameOrder> codeLike(String code) {
+        return StringUtils.isEmpty(code) ? null : (root, query, builder) -> builder.like(root.get("code"), "%" + code + "%");
     }
 
     public static Specification<GameOrder> orderCodeEqual(String orderCode) {

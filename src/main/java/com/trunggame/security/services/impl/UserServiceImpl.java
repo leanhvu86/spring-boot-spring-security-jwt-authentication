@@ -1,6 +1,5 @@
 package com.trunggame.security.services.impl;
 
-import com.trunggame.dto.SignupRequestDTO;
 import com.trunggame.dto.ValidateRequestDTO;
 import com.trunggame.enums.EUserStatus;
 import com.trunggame.models.User;
