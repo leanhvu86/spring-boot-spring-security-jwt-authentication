@@ -154,27 +154,26 @@ public class FileUploadController {
         return new BaseResponseDTO<>("Success", 200,200,fileDTOS);
     }
 
-    @PostMapping("/delete")
+    @PostMapping("/delete/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public BaseResponseDTO<Object> deleteFile(@RequestBody FileDTO file) throws Exception {
-        URI uri = new URI(file.getUrl());
-        String filename = uri.getPath().substring(uri.getPath().lastIndexOf('/') + 1);
-        var filePath = uploadPath + filename;
+    public BaseResponseDTO<Object> deleteFile(@PathVariable("id") String id) throws Exception {
+        var file = fileRepository.findFirstByUniqId(id);
+        if(file.isPresent()){
+            URI uri = new URI(file.get().getName());
+            String filename = uri.getPath().substring(uri.getPath().lastIndexOf('/') + 1);
+            var filePath = uploadPath + filename;
 
-        Path path = Paths.get(filePath);
+            Path path = Paths.get(filePath);
 
-        try {
-            Files.delete(path);
-            System.out.println("File deleted successfully.");
-        } catch (IOException e) {
-            System.out.println("Failed to delete the file: " + e.getMessage());
-            throw new Exception(e);
+            try {
+                Files.delete(path);
+                System.out.println("File deleted successfully.");
+            } catch (IOException e) {
+                System.out.println("Failed to delete the file: " + e.getMessage());
+                throw new Exception(e);
+            }
+            return new BaseResponseDTO<>("Success", 200,200,null);
         }
-
-        return new BaseResponseDTO<>("Success", 200,200,null);
+        return new BaseResponseDTO<>("File not found", 404,404,null);
     }
-
-
-
-
 }

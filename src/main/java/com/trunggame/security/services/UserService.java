@@ -24,5 +24,5 @@ public interface UserService {
 
     String RandGeneratedStr(int l);
 
-    Boolean sendEmailOrderSuccessful(String fullName, String email,String orderCode) throws MessagingException;
+    Boolean sendEmailOrderSuccessful(Integer type,String fullName, String email,String orderCode,String url) throws MessagingException;
 }

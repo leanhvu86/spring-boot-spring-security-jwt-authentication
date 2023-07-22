@@ -7,11 +7,18 @@ import com.trunggame.repository.BannerRepository;
 import com.trunggame.repository.FileRepository;
 import com.trunggame.repository.impl.PostRespositoryCustom;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
@@ -31,6 +38,9 @@ public class BannerController {
 
     @Autowired
     private FileRepository fileRepository;
+
+    @Value("${custom.properties.upload.path}")
+    private String uploadPath;
 
     @GetMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
@@ -70,6 +80,37 @@ public class BannerController {
         return new BaseResponseDTO<>("Success", 200, 200, bannerCreate);
     }
 
+    @PostMapping("/delete/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public BaseResponseDTO<?> deleteBanner(@PathVariable("id") Long type, @RequestBody Banner bannerInput) throws Exception {
+        Optional<Banner> bannerOptional = bannerRepository.findById(bannerInput.getId());
+        if (bannerOptional.isPresent()) {
+            Banner banner = bannerOptional.get();
+            String id = banner.getFileId();
+
+            bannerRepository.delete(banner);
+            var file = fileRepository.findFirstByUniqId(id);
+
+            if (file.isPresent()) {
+                URI uri = new URI(file.get().getName());
+                String filename = uri.getPath().substring(uri.getPath().lastIndexOf('/') + 1);
+                var filePath = uploadPath + filename;
+                Path path = Paths.get(filePath);
+                try {
+                    Files.delete(path);
+                    System.out.println("File deleted successfully.");
+                } catch (IOException e) {
+                    System.out.println("Failed to delete the file: " + e.getMessage());
+                    throw new Exception(e);
+                }
+                return new BaseResponseDTO<>("Success", 200, 200, null);
+            }
+        } else {
+            return new BaseResponseDTO<>("Not Found", 401, 401, null);
+        }
+        return new BaseResponseDTO<>("Not Found", 401, 401, null);
+    }
+
     @PostMapping("/update/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public BaseResponseDTO<?> updateBanner(@PathVariable("id") Long type, @RequestBody Banner bannerInput) {
@@ -82,9 +123,9 @@ public class BannerController {
             if (type == 0) {
                 banner.setStatus(Banner.Status.INACTIVE);
                 banner.setPriority("");
-                int priority=1;
-                for(BannerDTO bannerDTO: list){
-                    if(bannerDTO.getId()!= banner.getId()){
+                int priority = 1;
+                for (BannerDTO bannerDTO : list) {
+                    if (bannerDTO.getId() != banner.getId()) {
                         var ban = bannerRepository.findById(bannerDTO.getId());
                         ban.get().setPriority(String.valueOf(priority));
                         priority++;
@@ -92,7 +133,7 @@ public class BannerController {
                 }
             } else {
                 banner.setStatus(Banner.Status.ACTIVE);
-                banner.setPriority(String.valueOf(list.size()+1));
+                banner.setPriority(String.valueOf(list.size() + 1));
             }
 
             bannerRepository.save(banner);

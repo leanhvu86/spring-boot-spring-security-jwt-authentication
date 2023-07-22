@@ -120,7 +120,7 @@ public class AuthController {
     @PostMapping("/forget-password")
     public BaseResponseDTO<?> forgetPassword(@Valid @RequestBody ValidateRequestDTO signupRequestDTO) throws MessagingException {
         var result = userService.forgetPassword(signupRequestDTO);
-        if(result)
+        if (result)
             return new BaseResponseDTO<>("Check success!", 200, 200, true);
         else
             return new BaseResponseDTO<>("User does not exist", 401, 401, null);
@@ -159,31 +159,31 @@ public class AuthController {
         Set<String> strRoles = signUpRequest.getRole();
         Set<Role> roles = new HashSet<>();
 
-        if (strRoles == null) {
-            Role userRole = roleRepository.findByName(ERole.ROLE_USER)
-                    .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-            roles.add(userRole);
-        } else {
-            strRoles.forEach(role -> {
-                switch (role) {
-                    case "admin":
-                        Role adminRole = roleRepository.findByName(ERole.ROLE_ADMIN)
-                                .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-                        roles.add(adminRole);
-                        break;
-                    case "mod":
-                        Role modRole = roleRepository.findByName(ERole.ROLE_MODERATOR)
-                                .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-                        roles.add(modRole);
-
-                        break;
-                    default:
-                        Role userRole = roleRepository.findByName(ERole.ROLE_USER)
-                                .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-                        roles.add(userRole);
-                }
-            });
-        }
+//        if (strRoles == null) {
+        Role userRole = roleRepository.findByName(ERole.ROLE_USER)
+                .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+        roles.add(userRole);
+//        } else {
+//            strRoles.forEach(role -> {
+//                switch (role) {
+//                    case "admin":
+//                        Role adminRole = roleRepository.findByName(ERole.ROLE_ADMIN)
+//                                .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+//                        roles.add(adminRole);
+//                        break;
+//                    case "mod":
+//                        Role modRole = roleRepository.findByName(ERole.ROLE_MODERATOR)
+//                                .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+//                        roles.add(modRole);
+//
+//                        break;
+//                    default:
+//                        Role userRole = roleRepository.findByName(ERole.ROLE_USER)
+//                                .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+//                        roles.add(userRole);
+//                }
+//            });
+//        }
 
         user.setRoles(roles);
         userRepository.save(user);

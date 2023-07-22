@@ -110,7 +110,8 @@ public class GameOrderServiceImpl implements GameOrderService {
         gameOrderDetailRepository.saveAll(gameOrderDetails);
         gameOrderEntity.setTotalAmount(sum);
         gameOrderRepository.save(gameOrderEntity);
-        userService.sendEmailOrderSuccessful(currentUser.get().getFullName(),currentUser.get().getEmail(),uuID);
+        userService.sendEmailOrderSuccessful(0,currentUser.get().getFullName(),currentUser.get().getEmail(),uuID,"https://trunggames.com/my-order/"+gameOrderEntity.getId());
+        userService.sendEmailOrderSuccessful(1,currentUser.get().getFullName(),"trungbet2512@gmail.com",uuID,"http://trunggames.com:8090/#/order/edit/"+gameOrderEntity.getId());
         return new BaseResponseDTO<>("Success", 200, 200, gameOrderEntity);
     }
 

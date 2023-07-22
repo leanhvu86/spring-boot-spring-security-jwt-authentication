@@ -2,6 +2,7 @@ package com.trunggame.controllers;
 
 import com.trunggame.dto.*;
 import com.trunggame.models.GameOrder;
+import com.trunggame.repository.GameOrderRepository;
 import com.trunggame.security.services.GameOrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -17,6 +18,9 @@ public class OrderController {
 
     @Autowired
     private GameOrderService orderService;
+
+    @Autowired
+    private GameOrderRepository gameOrderRepository;
 
     @PostMapping("/create")
     @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
@@ -38,8 +42,13 @@ public class OrderController {
 
     @GetMapping("")
     @PreAuthorize("hasRole('ADMIN')")
-    public List<GameOrder> getAllOrders(@ModelAttribute GetOrderDTO getOrderDTO) {
-        return orderService.getAllOrders(getOrderDTO);
+    public GetOrderDTO getAllOrders(@ModelAttribute GetOrderDTO getOrderDTO) {
+        var dto= GetOrderDTO.builder()
+                .orderList(orderService.getAllOrders(getOrderDTO))
+                .pageNumber(getOrderDTO.getPageNumber())
+                .pageSize(getOrderDTO.getPageSize())
+                .totalData(gameOrderRepository.count()).build();
+        return dto;
     }
 
     @GetMapping("/filter")

@@ -1,11 +1,13 @@
 package com.trunggame.dto;
 
+import com.trunggame.models.GameOrder;
 import lombok.Builder;
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 @Data
 @Builder
@@ -24,4 +26,6 @@ public class GetOrderDTO {
     private Long customerId;
     private String status;
     private BigDecimal totalAmount;
+    private List<GameOrder> orderList;
+    private Long totalData;
 }

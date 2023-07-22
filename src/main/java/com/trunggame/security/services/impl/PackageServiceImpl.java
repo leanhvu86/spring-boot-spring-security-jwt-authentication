@@ -29,20 +29,11 @@ import java.util.stream.Collectors;
 @Service
 public class PackageServiceImpl implements PackageService {
 
-    @PersistenceContext
-    private EntityManager entityManager;
-
-    @Autowired
-    private CategoryRepository categoryRepository;
-
     @Autowired
     private GameRepository gameRepository;
 
     @Autowired
     private FileRepository fileRepository;
-
-    @Autowired
-    private PriceRepository priceRepository;
 
     @Autowired
     private UserRepository userRepository;

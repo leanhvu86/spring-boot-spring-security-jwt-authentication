@@ -29,7 +29,7 @@ public class GameOrderDetail {
     @Column(name = "quantity")
     private Integer quantity;
 
-    @Column(name = "character_name",columnDefinition = "VARCHAR(5000) CHARACTER SET utf8")
+    @Column(name = "character_name", columnDefinition = "VARCHAR(5000) CHARACTER SET utf8")
     private String characterName;
 
     @Column(name = "promotion_percent")
@@ -39,7 +39,7 @@ public class GameOrderDetail {
     private BigDecimal totalAmount;
 
     @Column(name = "status")
-    private String status;
+    private String status = "0";
 
     @Column(name = "customer_id")
     private Integer customerId;
@@ -62,7 +62,7 @@ public class GameOrderDetail {
     @Column(name = "login_code")
     private String loginCode;
 
-    @Column(name = "description",length = 1000, columnDefinition = "TEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci")
+    @Column(name = "description", length = 1000, columnDefinition = "TEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci")
     private String description;
 
     @Column(name = "amount")

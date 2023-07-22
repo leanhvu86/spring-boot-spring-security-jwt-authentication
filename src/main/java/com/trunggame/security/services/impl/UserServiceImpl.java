@@ -106,7 +106,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public Boolean forgetPassword(ValidateRequestDTO signupRequestDTO) throws MessagingException {
         var user = userRepository.findByUsername(signupRequestDTO.getUsername());
-        if (user.isPresent()&&user.get().getStatus() != EUserStatus.DELETED) {
+        if (user.isPresent() && user.get().getStatus() != EUserStatus.DELETED) {
             String password = RandGeneratedStr(10);
             var userTemp = user.get();
             userTemp.setPassword(encoder.encode(password));
@@ -185,13 +185,22 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Boolean sendEmailOrderSuccessful(String fullName, String email, String orderCode) throws MessagingException {
+    public Boolean sendEmailOrderSuccessful(Integer type, String fullName, String email, String orderCode, String link) throws MessagingException {
+        String html;
+        if (type == 0) {
+            html = "<h2>Hi " + fullName + "</h2><br/>" +
+                    "<p> Welcome to join with us on Trung Games website <br/>\n" +
+                    "Thank you for booking the order: <strong>" + orderCode + "</strong><br/>\n" +
+                    "We will contact you immediately!<br/> \n" +
+                    "Order link: " + link + "!<br/> \n" +
+                    "Have a good experience on our service!</p>";
+        } else {
+            html = "<h2>New order:  " + orderCode + "</h2><br/>" +
+                    "Custmer <strong>" + fullName + "</strong> have book new order!<br/>\n" +
+                    "Please check detail in admin page!: " + link + "<br/> \n" +
+                    "Have a good experience on our service!</p>";
+        }
 
-        String html = "<h2>Hi " + fullName + "</h2><br/>" +
-                "<p> Welcome to join with us on Trung Games website <br/>\n" +
-                "Thank you for booking the order: <strong>" + orderCode + "</strong><br/>\n" +
-                "We will contact you immediately!<br/> \n" +
-                "Have a good experience on our service!</p>";
 
         this.sendAsHtml(email,
                 "[TRUNGGAMES] Congratulation! You have booked an order successfully!",

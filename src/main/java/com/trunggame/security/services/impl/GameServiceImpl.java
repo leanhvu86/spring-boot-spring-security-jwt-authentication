@@ -303,6 +303,7 @@ public class GameServiceImpl implements GameService {
             var gameServerGroups = gameServerGroupRepository.findAllByGameId(game.getId());
             game.setServer(gameServerGroups);
         }
+
         return LoadDataDTO.builder()
                 .listGame(games)
                 .newGames(newGame)

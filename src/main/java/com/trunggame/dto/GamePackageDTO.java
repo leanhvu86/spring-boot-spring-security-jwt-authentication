@@ -29,6 +29,9 @@ public class GamePackageDTO {
     private String serverGroup;
 
     private List<GameServerGroup> server;
+
+    private String listServer;
+
     private List<GameServerGroup> removeServer;
 
     private String attribute;
